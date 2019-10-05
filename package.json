@@ -1,0 +1,32 @@
+{
+  "name": "urrevs",
+  "version": "0.1.0",
+  "description": "A Cutomer Review Platform",
+  "homepage": "https://urrevs.com",
+  "repository": "github:KhaledEmaraDev/URrevs",
+  "author": "Khaled Emara",
+  "license": "MPL-2.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.5.0",
+    "@material-ui/icons": "^4.4.3",
+    "@material-ui/lab": "^4.0.0-alpha.28",
+    "@material-ui/styles": "^4.5.0",
+    "clsx": "^1.0.4",
+    "jss": "^10.0.0",
+    "jss-rtl": "^0.3.0",
+    "next": "9.0.7",
+    "prop-types": "^15.7.2",
+    "react": "16.10.2",
+    "react-dom": "16.10.2"
+  },
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "eslint-plugin-react": "^7.16.0"
+  }
+}
