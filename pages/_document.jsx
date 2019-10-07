@@ -8,6 +8,8 @@ class MyDocument extends Document {
     return (
       <html lang="ar">
         <Head>
+          <link rel="icon" href="/static/images/favicon.ico" />
+          <link rel="manifest" href="/static/manifest.json"></link>
           <meta charSet="utf-8" />
           <meta
             name="viewport"

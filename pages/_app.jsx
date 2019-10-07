@@ -6,6 +6,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { create } from "jss";
 import rtl from "jss-rtl";
 import theme from "../components/theme";
+import MainNav from "../components/MainNav";
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
@@ -30,7 +31,9 @@ export default class MyApp extends App {
           <StylesProvider jss={jss}>
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
-            <Component {...pageProps} />
+            <MainNav>
+              <Component {...pageProps} />
+            </MainNav>
           </StylesProvider>
         </ThemeProvider>
       </React.Fragment>
