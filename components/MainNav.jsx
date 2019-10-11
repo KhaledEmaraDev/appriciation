@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
-import InfoIcon from "@material-ui/icons/Info";
-// import AccountCircle from "@material-ui/icons/AccountCircle";
+import AccountCircleTwoTone from "@material-ui/icons/AccountCircleTwoTone";
 import Avatar from "@material-ui/core/Avatar";
 import AppBar from "@material-ui/core/AppBar";
 import Container from "@material-ui/core/Container";
 import CreateIcon from "@material-ui/icons/Create";
+import Dialog from "@material-ui/core/Dialog";
 import Divider from "@material-ui/core/Divider";
 import Drawer from "@material-ui/core/Drawer";
 import FacebookBox from "mdi-material-ui/FacebookBox";
@@ -14,6 +14,7 @@ import ForumIcon from "@material-ui/icons/Forum";
 import Hidden from "@material-ui/core/Hidden";
 import HomeIcon from "@material-ui/icons/Home";
 import IconButton from "@material-ui/core/IconButton";
+import InfoIcon from "@material-ui/icons/Info";
 import InputBase from "@material-ui/core/InputBase";
 import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 import KeyboardArrowLeftRoundedIcon from "@material-ui/icons/KeyboardArrowLeftRounded";
@@ -31,12 +32,22 @@ import MenuItem from "@material-ui/core/MenuItem";
 import MuiLink from "@material-ui/core/Link";
 import RateReviewIcon from "@material-ui/icons/RateReview";
 import SearchIcon from "@material-ui/icons/Search";
+import SignInDialog from "../components/dialogs/SignInDialog";
+import SignUpDialog from "../components/dialogs/SignUpDialog";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
+
+import firebase from "firebase/app";
+import "firebase/auth";
+import "isomorphic-unfetch";
+import clientCredentials from "../credentials/client";
+
+import { useStateValue } from "../store";
+import { setUser, setDialog } from "../actions";
 
 function ElevationScroll(props) {
   const { children, window } = props;
@@ -87,14 +98,16 @@ const useStyles = makeStyles(theme => ({
   },
   logo: {
     width: theme.spacing(7),
-    transition: theme.transitions.create("width", {
+    margin: theme.spacing(0, 2, 0, 0),
+    transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     })
   },
   logoHide: {
     width: 0,
-    transition: theme.transitions.create("width", {
+    margin: 0,
+    transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
     })
@@ -110,7 +123,6 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: theme.palette.background.default,
       border: `1px solid ${theme.palette.divider}`
     },
-    margin: theme.spacing(0, 0, 0, 2),
     width: "100%"
   },
   searchIcon: {
@@ -204,11 +216,47 @@ export default function MainNav(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
+  const [{ user, dialog }, dispatch] = useStateValue();
+
+  useEffect(() => {
+    firebase.initializeApp(clientCredentials);
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        dispatch(setUser(user));
+        dispatch(setDialog(null));
+        return user.getIdToken().then(token => {
+          // eslint-disable-next-line no-undef
+          return fetch("/api/login", {
+            method: "POST",
+            // eslint-disable-next-line no-undef
+            headers: new Headers({ "Content-Type": "application/json" }),
+            credentials: "same-origin",
+            body: JSON.stringify({ token })
+          });
+        });
+      } else {
+        dispatch(setUser(null));
+        // eslint-disable-next-line no-undef
+        fetch("/api/logout", {
+          method: "POST",
+          credentials: "same-origin"
+        });
+      }
+    });
+  }, []);
+
   const handleProfileMenuOpen = event => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleAccountClick = () => {
+    if (!user) dispatch(setDialog("sign-in"));
+    else firebase.auth().signOut();
     setAnchorEl(null);
   };
 
@@ -244,6 +292,10 @@ export default function MainNav(props) {
     setSearchFocus(focused);
   };
 
+  const handleDialogClose = () => {
+    dispatch(setDialog(null));
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -255,7 +307,9 @@ export default function MainNav(props) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>تسجيل الدخول</MenuItem>
+      <MenuItem onClick={handleAccountClick}>
+        {!user ? "تسجيل الدخول" : "تسجيل الخروج"}
+      </MenuItem>
     </Menu>
   );
 
@@ -264,9 +318,19 @@ export default function MainNav(props) {
       <List>
         <ListItem alignItems="flex-start">
           <ListItemAvatar>
-            <Avatar alt="user avatar" src="https:i.pravatar.cc/96" />
+            <Avatar
+              alt="user avatar"
+              src={
+                user && user.photoURL
+                  ? user.photoURL
+                  : "https://i.pravatar.cc/96"
+              }
+            />
           </ListItemAvatar>
-          <ListItemText primary="مرحباً بك" secondary="اسم المستخدم" />
+          <ListItemText
+            primary="مرحباً بك"
+            secondary={user && user.displayName ? user.displayName : "مجهول"}
+          />
           <ListItemSecondaryAction>
             <IconButton
               edge="end"
@@ -356,118 +420,137 @@ export default function MainNav(props) {
   }
 
   return (
-    <div className={clsx(classes.root, classes.grow)}>
-      <ElevationScroll {...props}>
-        <AppBar
-          position="fixed"
-          className={clsx(classes.appBar, {
-            [classes.appBarShift]: open
-          })}
-          color="inherit"
-        >
-          <Toolbar className={classes.toolbar}>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOn}
-              edge="start"
-              className={clsx({
-                [classes.hide]: open
-              })}
-            >
-              <MenuIcon />
-            </IconButton>
-            <img
-              className={clsx(classes.logo, {
-                [classes.logoHide]: searchFocus
-              })}
-              src="/static/images/logo.png"
-              alt="logo"
-            />
-            <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon color="action" />
-              </div>
-              <InputBase
-                fullWidth
-                placeholder="ابحث عن هاتف"
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput
-                }}
-                inputProps={{
-                  "aria-label": "search"
-                }}
-                onFocus={handleSearchFocus(true)}
-                onBlur={handleSearchFocus(false)}
-              />
-            </div>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <Avatar
-                className={classes.avatar}
-                alt="user avatar"
-                src="https:i.pravatar.cc/96"
-              />
-              {/* <AccountCircle /> */}
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-      </ElevationScroll>
-      {renderMenu}
-      <nav aria-label="site pages">
-        <Hidden smUp implementation="css">
-          <SwipeableDrawer
-            anchor="bottom"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true // Better open performance on mobile.
-            }}
-            PaperProps={{
-              square: false
-            }}
-            disableBackdropTransition={!iOS}
-            disableSwipeToOpen={false}
-            onOpen={handleDrawerToggle}
-          >
-            {drawer}
-          </SwipeableDrawer>
-        </Hidden>
-        <Hidden xsDown implementation="css">
-          <Drawer
-            variant="permanent"
-            className={clsx(classes.drawer, {
-              [classes.drawerOpen]: open,
-              [classes.drawerClose]: !open
+    <React.Fragment>
+      <div className={clsx(classes.root, classes.grow)}>
+        <ElevationScroll {...props}>
+          <AppBar
+            position="fixed"
+            className={clsx(classes.appBar, {
+              [classes.appBarShift]: open
             })}
-            classes={{
-              paper: clsx({
+            color="inherit"
+          >
+            <Toolbar className={classes.toolbar}>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOn}
+                edge="start"
+                className={clsx({
+                  [classes.hide]: open
+                })}
+              >
+                <MenuIcon />
+              </IconButton>
+              <img
+                className={clsx(classes.logo, {
+                  [classes.logoHide]: searchFocus
+                })}
+                src="/static/images/logo.png"
+                alt="logo"
+              />
+              <div className={classes.search}>
+                <div className={classes.searchIcon}>
+                  <SearchIcon color="action" />
+                </div>
+                <InputBase
+                  fullWidth
+                  placeholder="ابحث عن هاتف"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput
+                  }}
+                  inputProps={{
+                    "aria-label": "search"
+                  }}
+                  onFocus={handleSearchFocus(true)}
+                  onBlur={handleSearchFocus(false)}
+                />
+              </div>
+              <IconButton
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                {user && user.photoURL ? (
+                  <Avatar
+                    className={classes.avatar}
+                    alt="user avatar"
+                    src={user.photoURL}
+                  />
+                ) : (
+                  <AccountCircleTwoTone />
+                )}
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+        </ElevationScroll>
+        {renderMenu}
+        <nav aria-label="site pages">
+          <Hidden smUp implementation="css">
+            <SwipeableDrawer
+              anchor="bottom"
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              ModalProps={{
+                keepMounted: true // Better open performance on mobile.
+              }}
+              PaperProps={{
+                square: false
+              }}
+              disableBackdropTransition={!iOS}
+              disableSwipeToOpen={false}
+              onOpen={handleDrawerToggle}
+            >
+              {drawer}
+            </SwipeableDrawer>
+          </Hidden>
+          <Hidden xsDown implementation="css">
+            <Drawer
+              variant="permanent"
+              className={clsx(classes.drawer, {
                 [classes.drawerOpen]: open,
                 [classes.drawerClose]: !open
-              })
-            }}
-            open={open}
-          >
-            {drawer}
-          </Drawer>
-        </Hidden>
-      </nav>
-      <div className={classes.content}>
-        <div className={classes.toolbar} />
-        <Container component="main" maxWidth="md">
-          {props.children}
-        </Container>
-        <footer className={classes.footer}>
-          <Copyright />
-        </footer>
+              })}
+              classes={{
+                paper: clsx({
+                  [classes.drawerOpen]: open,
+                  [classes.drawerClose]: !open
+                })
+              }}
+              open={open}
+            >
+              {drawer}
+            </Drawer>
+          </Hidden>
+        </nav>
+        <div className={classes.content}>
+          <div className={classes.toolbar} />
+          <Container component="main" maxWidth="md">
+            {props.children}
+          </Container>
+          <footer className={classes.footer}>
+            <Copyright />
+          </footer>
+        </div>
       </div>
-    </div>
+      <Dialog
+        open={dialog === "sign-in"}
+        onClose={handleDialogClose}
+        aria-labelledby="sign-in-dialog"
+      >
+        <SignInDialog />
+      </Dialog>
+      <Dialog
+        open={dialog === "sign-up"}
+        onClose={handleDialogClose}
+        aria-labelledby="sign-up-dialog"
+      >
+        <SignUpDialog />
+      </Dialog>
+    </React.Fragment>
   );
 }
 

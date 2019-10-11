@@ -6,6 +6,9 @@ import CardHeader from "@material-ui/core/CardHeader";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 
+import { useStateValue } from "../store";
+import { setDialog } from "../actions";
+
 const useStyles = makeStyles(theme => {
   const cardShadow = "0px 14px 80px rgba(34, 35, 58, 0.2)";
   const headerShadow = "4px 4px 20px 1px rgba(33, 203, 243, .3)";
@@ -61,12 +64,24 @@ const useStyles = makeStyles(theme => {
 
 export default function Index() {
   const classes = useStyles();
+
+  // eslint-disable-next-line no-unused-vars
+  const [{ dialog }, dispatch] = useStateValue();
+
+  function handleSignUpClick() {
+    dispatch(setDialog("sign-up"));
+  }
+
   return (
     <Card className={classes.card}>
       <CardHeader
         className={classes.header}
         title={
-          <Typography variant="subtitle1" component="h1" className={classes.title}>
+          <Typography
+            variant="subtitle1"
+            component="h1"
+            className={classes.title}
+          >
             أول منصة لمراجعات المستخدمين بالشرق الأوسط
           </Typography>
         }
@@ -86,7 +101,9 @@ export default function Index() {
             هدفنا مساعدتك تختار
           </Typography>
           <Button color="red">راجع الاَن</Button>
-          <Button color="red">سجل الاَن</Button>
+          <Button color="red" onClick={handleSignUpClick}>
+            سجل الاَن
+          </Button>
         </div>
       </CardContent>
     </Card>

@@ -1,8 +1,8 @@
-/* eslint-disable no-unused-vars */
 import React from "react";
 import { styled } from "@material-ui/styles";
 import Button from "@material-ui/core/Button";
 
+// eslint-disable-next-line no-unused-vars
 export default styled(({ color, ...other }) => <Button {...other} />)({
   background: props =>
     props.color === "red"
