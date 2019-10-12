@@ -1,6 +1,6 @@
 import React from "react";
-import { styled } from "@material-ui/styles";
 import Button from "@material-ui/core/Button";
+import { styled } from "@material-ui/styles";
 
 // eslint-disable-next-line no-unused-vars
 export default styled(({ color, ...other }) => <Button {...other} />)({

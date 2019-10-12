@@ -1,3 +1,4 @@
+import "isomorphic-unfetch";
 import React, { useEffect } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
@@ -43,7 +44,6 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 
 import firebase from "firebase/app";
 import "firebase/auth";
-import "isomorphic-unfetch";
 import clientCredentials from "../credentials/client";
 
 import { useStateValue } from "../store";
@@ -318,14 +318,11 @@ export default function MainNav(props) {
       <List>
         <ListItem alignItems="flex-start">
           <ListItemAvatar>
-            <Avatar
-              alt="user avatar"
-              src={
-                user && user.photoURL
-                  ? user.photoURL
-                  : "https://i.pravatar.cc/96"
-              }
-            />
+            {user && user.photoURL ? (
+              <Avatar alt="user avatar" src={user.photoURL} />
+            ) : (
+              <AccountCircleTwoTone fontSize="large" />
+            )}
           </ListItemAvatar>
           <ListItemText
             primary="مرحباً بك"
