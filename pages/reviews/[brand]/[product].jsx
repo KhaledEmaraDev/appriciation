@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import ProductOverview from "../../../components/ProductOverview";
 import ProductRating from "../../../components/ProductRating";
+import ProductReviews from "../../../components/ProductReviews";
 import ProductSpecs from "../../../components/ProductSpecs";
 
 const categories = {
@@ -18,11 +19,11 @@ const categories = {
 };
 
 export default function Reviews(props) {
-  const { brand, product, rating, ratings, specs } = props;
+  const { brand, product, rating, ratings, specs, reviews } = props;
 
-  const namedRatings = categories.phone.map((name, index) => ({
-    category: name,
-    value: ratings[index]
+  const namedRatings = ratings.map((rating, index) => ({
+    category: categories.phone[index],
+    value: rating
   }));
 
   return (
@@ -32,7 +33,7 @@ export default function Reviews(props) {
           brand={brand}
           product={product}
           rating={rating}
-          imageExists={true}
+          imageExists={specs !== null}
         />
       </Grid>
       <Grid item xs={12}>
@@ -40,6 +41,9 @@ export default function Reviews(props) {
       </Grid>
       <Grid item xs={12}>
         <ProductSpecs brand={brand} product={product} specs={specs} />
+      </Grid>
+      <Grid item xs={12}>
+        <ProductReviews brand={brand} product={product} reviews={reviews} />
       </Grid>
     </Grid>
   );
@@ -56,7 +60,8 @@ Reviews.getInitialProps = async ({ query }) => {
     product,
     rating: json.rating,
     ratings: json.ratings,
-    specs: json.specs
+    specs: json.specs,
+    reviews: json.reviews
   };
 };
 
@@ -65,5 +70,6 @@ Reviews.propTypes = {
   product: PropTypes.string.isRequired,
   rating: PropTypes.number,
   ratings: PropTypes.array,
-  specs: PropTypes.object
+  specs: PropTypes.object,
+  reviews: PropTypes.array
 };

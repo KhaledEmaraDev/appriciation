@@ -11,43 +11,70 @@ const handler = (req, res) => {
     case "GET": {
       const specsPromise = db.collection("specs").findOne({ brand, product });
 
-      const ratingsCursor = db.collection("reviews").aggregate([
-        {
-          $match: {
-            brand,
-            product
+      const ratingsPromise = db
+        .collection("reviews")
+        .aggregate([
+          {
+            $match: {
+              brand,
+              product
+            }
+          },
+          { $project: { _id: false, ratings: true } },
+          { $unwind: { path: "$ratings", includeArrayIndex: "index" } },
+          {
+            $group: {
+              _id: "$index",
+              avg_rating: { $avg: "$ratings" }
+            }
+          },
+          { $sort: { _id: 1 } },
+          {
+            $group: {
+              _id: null,
+              rating: { $avg: "$avg_rating" },
+              ratings: { $push: "$avg_rating" }
+            }
+          },
+          {
+            $project: { _id: false }
           }
-        },
-        { $project: { _id: false, ratings: true } },
-        { $unwind: { path: "$ratings", includeArrayIndex: "index" } },
-        {
-          $group: {
-            _id: "$index",
-            avg_rating: { $avg: "$ratings" }
-          }
-        },
-        { $sort: { _id: 1 } },
-        {
-          $group: {
-            _id: null,
-            rating: { $avg: "$avg_rating" },
-            ratings: { $push: "$avg_rating" }
-          }
-        },
-        {
-          $project: { _id: false }
-        }
-      ]);
+        ])
+        .next();
 
-      Promise.all([
-        specsPromise,
-        ratingsCursor.hasNext() ? ratingsCursor.next() : null
-      ])
+      const reviewsPromise = db
+        .collection("reviews")
+        .aggregate([
+          {
+            $match: { brand, product }
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "user",
+              foreignField: "_id",
+              as: "userData"
+            }
+          },
+          {
+            $replaceRoot: {
+              newRoot: {
+                $mergeObjects: [{ $arrayElemAt: ["$userData", 0] }, "$$ROOT"]
+              }
+            }
+          },
+          { $project: { userData: false } },
+          { $sort: { user: -1 } }
+        ])
+        .toArray();
+
+      Promise.all([specsPromise, ratingsPromise, reviewsPromise])
         .then(results =>
           res.status(200).json({
             specs: results[0],
             rating: results[1] ? results[1].rating : null,
-            ratings: results[1] ? results[1].ratings : null
+            ratings: results[1] ? results[1].ratings : null,
+            reviews: results[2]
           })
         )
         .catch(err => {

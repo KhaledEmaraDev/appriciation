@@ -24,23 +24,24 @@ export default function ProductRating(props) {
   const { brand, product, ratings } = props;
 
   return (
-    <Paper className={classes.root}>
+    <Paper className={classes.root} elevation={24}>
       <Typography
         className={classes.subheader}
         component="h1"
         variant="subtitle2"
       >{`تقييمات هاتف ${brand} ${product}`}</Typography>
       <Grid container spacing={1}>
-        {ratings.map(rating => (
-          <React.Fragment key={rating.category}>
-            <Grid item xs={6} sm={3}>
-              <Typography variant="subtitle2">{rating.category}:</Typography>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Rating name="rate1" value={rating.value} readOnly />
-            </Grid>
-          </React.Fragment>
-        ))}
+        {ratings &&
+          ratings.map(rating => (
+            <React.Fragment key={rating.category}>
+              <Grid item xs={6} sm={3}>
+                <Typography variant="subtitle2">{rating.category}:</Typography>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Rating value={rating.value} readOnly />
+              </Grid>
+            </React.Fragment>
+          ))}
       </Grid>
     </Paper>
   );

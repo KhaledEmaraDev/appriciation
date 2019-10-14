@@ -46,7 +46,7 @@ export default function ProductOverview(props) {
           />
         </Head>
       )}
-      <Card className={classes.card}>
+      <Card className={classes.card} elevation={24}>
         {imageExists && (
           <CardMedia
             component="img"
@@ -59,7 +59,7 @@ export default function ProductOverview(props) {
         <div className={classes.details}>
           <CardContent className={classes.content}>
             <Typography component="h1" variant="h5">
-              {`مراجعات هاتف ${brand} ${product}`}
+              {`${brand} ${product}`}
             </Typography>
             <Rating value={rating} readOnly />
           </CardContent>

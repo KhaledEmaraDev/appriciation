@@ -40,7 +40,7 @@ export default function ProductSpecs(props) {
 
   const isComparison = specs && comparedBrand && comparedSpecs;
 
-  if (specs === undefined && comparedSpecs === undefined)
+  if (!specs && !comparedSpecs)
     return (
       <Paper className={classes.root}>
         <Typography className={classes.subheader}>
@@ -275,7 +275,7 @@ export default function ProductSpecs(props) {
   const comparedRows = isComparison ? getRows(comparedSpecs) : null;
 
   return (
-    <Paper className={classes.root}>
+    <Paper className={classes.root} elevation={24}>
       <Typography
         className={classes.subheader}
         component="h1"
