@@ -20,7 +20,8 @@ const nextConfig = {
     }
   },
   env: {
-    SESSION_SECRET: process.env.SESSION_SECRET
+    SESSION_SECRET: process.env.SESSION_SECRET,
+    DB_PASSWORD: process.env.DB_PASSWORD
   },
   webpack(config) {
     return config;

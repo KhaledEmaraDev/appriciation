@@ -155,6 +155,10 @@ const useStyles = makeStyles(theme => ({
     flexShrink: 0,
     whiteSpace: "nowrap"
   },
+  swipableDrawer: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0
+  },
   drawerOpen: {
     width: drawerWidth,
     transition: theme.transitions.create("width", {
@@ -187,6 +191,9 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexDirection: "column",
     minHeight: "100vh"
+  },
+  main: {
+    padding: theme.spacing(2)
   },
   footer: {
     padding: theme.spacing(2),
@@ -347,7 +354,7 @@ export default function MainNav(props) {
           </ListItemSecondaryAction>
         </ListItem>
       </List>
-      <Divider />
+      <Divider variant="middle" />
       <List>
         <ListItem className={classes.listItem} button selected>
           <ListItemIcon>
@@ -497,6 +504,9 @@ export default function MainNav(props) {
               PaperProps={{
                 square: false
               }}
+              classes={{
+                paper: classes.swipableDrawer
+              }}
               disableBackdropTransition={!iOS}
               disableSwipeToOpen={false}
               onOpen={handleDrawerToggle}
@@ -525,7 +535,7 @@ export default function MainNav(props) {
         </nav>
         <div className={classes.content}>
           <div className={classes.toolbar} />
-          <Container component="main" maxWidth="md">
+          <Container className={classes.main} component="main" maxWidth="md">
             {props.children}
           </Container>
           <footer className={classes.footer}>
