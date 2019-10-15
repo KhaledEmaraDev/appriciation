@@ -2,6 +2,7 @@ import "isomorphic-unfetch";
 import React, { useEffect } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
+import { useRouter } from "next/router";
 import AccountCircleTwoTone from "@material-ui/icons/AccountCircleTwoTone";
 import Avatar from "@material-ui/core/Avatar";
 import AppBar from "@material-ui/core/AppBar";
@@ -16,7 +17,6 @@ import Hidden from "@material-ui/core/Hidden";
 import HomeIcon from "@material-ui/icons/Home";
 import IconButton from "@material-ui/core/IconButton";
 import InfoIcon from "@material-ui/icons/Info";
-import InputBase from "@material-ui/core/InputBase";
 import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 import KeyboardArrowLeftRoundedIcon from "@material-ui/icons/KeyboardArrowLeftRounded";
 import KeyboardArrowRightRoundedIcon from "@material-ui/icons/KeyboardArrowRightRounded";
@@ -32,7 +32,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MuiLink from "@material-ui/core/Link";
 import RateReviewIcon from "@material-ui/icons/RateReview";
-import SearchIcon from "@material-ui/icons/Search";
+import SearchBar from "./SearchBar";
 import SignInDialog from "../components/dialogs/SignInDialog";
 import SignUpDialog from "../components/dialogs/SignUpDialog";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
@@ -42,9 +42,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 
-import firebase from "firebase/app";
-import "firebase/auth";
-import clientCredentials from "../credentials/client";
+import firebaseAuth from "../firebase";
 
 import { useStateValue } from "../store";
 import { setUser, setDialog } from "../actions";
@@ -78,7 +76,9 @@ const useStyles = makeStyles(theme => ({
   appBar: {
     backgroundColor: theme.palette.background.default,
     [theme.breakpoints.up("sm")]: {
-      zIndex: theme.zIndex.drawer + 1,
+      // zIndex: theme.zIndex.drawer + 1,
+      marginLeft: theme.spacing(9) + 1,
+      width: `calc(100% - ${theme.spacing(9) + 1}px)`,
       transition: theme.transitions.create(["width", "margin"], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen
@@ -111,40 +111,6 @@ const useStyles = makeStyles(theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
     })
-  },
-  search: {
-    position: "relative",
-    borderRadius: "100px",
-    backgroundColor: theme.palette.grey["200"],
-    "&:hover": {
-      backgroundColor: theme.palette.grey["100"]
-    },
-    "&:focus-within": {
-      backgroundColor: theme.palette.background.default,
-      border: `1px solid ${theme.palette.divider}`
-    },
-    width: "100%"
-  },
-  searchIcon: {
-    width: theme.spacing(7),
-    height: "100%",
-    position: "absolute",
-    pointerEvents: "none",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    top: 0,
-    left: 0
-  },
-  svgSearchIcon: {
-    color: theme.palette.action.active
-  },
-  inputRoot: {
-    color: "inherit"
-  },
-  inputInput: {
-    padding: theme.spacing(1.25, 1, 0.75, 7),
-    width: "100%"
   },
   avatar: {
     width: theme.spacing(3),
@@ -212,6 +178,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function MainNav(props) {
+  const router = useRouter();
   const classes = useStyles();
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -226,9 +193,7 @@ export default function MainNav(props) {
   const [{ user, dialog }, dispatch] = useStateValue();
 
   useEffect(() => {
-    firebase.initializeApp(clientCredentials);
-
-    firebase.auth().onAuthStateChanged(user => {
+    firebaseAuth.onAuthStateChanged(user => {
       if (user) {
         dispatch(setUser(user));
         dispatch(setDialog(null));
@@ -251,7 +216,7 @@ export default function MainNav(props) {
         });
       }
     });
-  }, []);
+  }, [firebaseAuth]);
 
   const handleProfileMenuOpen = event => {
     setAnchorEl(event.currentTarget);
@@ -263,7 +228,7 @@ export default function MainNav(props) {
 
   const handleAccountClick = () => {
     if (!user) dispatch(setDialog("sign-in"));
-    else firebase.auth().signOut();
+    else firebaseAuth.signOut();
     setAnchorEl(null);
   };
 
@@ -303,6 +268,11 @@ export default function MainNav(props) {
     dispatch(setDialog(null));
   };
 
+  const handleProductSelected = suggestion => {
+    const { brand, product } = suggestion;
+    router.push("/reviews/[brand]/[product]", `/reviews/${brand}/${product}`);
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -335,23 +305,25 @@ export default function MainNav(props) {
             primary="مرحباً بك"
             secondary={user && user.displayName ? user.displayName : "مجهول"}
           />
-          <ListItemSecondaryAction>
-            <IconButton
-              edge="end"
-              aria-label="close drawer"
-              onClick={handleDrawerOff}
-            >
-              {isDesktop ? (
-                theme.direction === "rtl" ? (
-                  <KeyboardArrowRightRoundedIcon />
+          {(open || mobileOpen) && (
+            <ListItemSecondaryAction>
+              <IconButton
+                edge="end"
+                aria-label="close drawer"
+                onClick={handleDrawerOff}
+              >
+                {isDesktop ? (
+                  theme.direction === "rtl" ? (
+                    <KeyboardArrowRightRoundedIcon />
+                  ) : (
+                    <KeyboardArrowLeftRoundedIcon />
+                  )
                 ) : (
-                  <KeyboardArrowLeftRoundedIcon />
-                )
-              ) : (
-                <KeyboardArrowDownRoundedIcon />
-              )}
-            </IconButton>
-          </ListItemSecondaryAction>
+                  <KeyboardArrowDownRoundedIcon />
+                )}
+              </IconButton>
+            </ListItemSecondaryAction>
+          )}
         </ListItem>
       </List>
       <Divider variant="middle" />
@@ -404,7 +376,7 @@ export default function MainNav(props) {
             <img
               className={classes.sponsorIcon}
               src="/static/images/iHub.png"
-              alt="iHun logo"
+              alt="iHub logo"
             ></img>
           </MuiLink>
         </Typography>
@@ -446,31 +418,22 @@ export default function MainNav(props) {
               >
                 <MenuIcon />
               </IconButton>
-              <img
-                className={clsx(classes.logo, {
-                  [classes.logoHide]: searchFocus
-                })}
-                src="/static/images/logo.png"
-                alt="logo"
-              />
-              <div className={classes.search}>
-                <div className={classes.searchIcon}>
-                  <SearchIcon color="action" />
-                </div>
-                <InputBase
-                  fullWidth
-                  placeholder="ابحث عن هاتف"
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput
-                  }}
-                  inputProps={{
-                    "aria-label": "search"
-                  }}
-                  onFocus={handleSearchFocus(true)}
-                  onBlur={handleSearchFocus(false)}
+              <Link href="/">
+                <img
+                  className={clsx(classes.logo, {
+                    [classes.logoHide]: searchFocus
+                  })}
+                  src="/static/images/logo.png"
+                  alt="logo"
                 />
-              </div>
+              </Link>
+              <SearchBar
+                id="product-search"
+                placeholder="ابحث عن منتج"
+                onFocus={handleSearchFocus(true)}
+                onBlur={handleSearchFocus(false)}
+                handleSuggestionSelected={handleProductSelected}
+              />
               <IconButton
                 aria-label="account of current user"
                 aria-controls={menuId}

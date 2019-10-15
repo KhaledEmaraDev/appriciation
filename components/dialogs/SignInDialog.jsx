@@ -11,7 +11,8 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/styles";
 
-import firebase from "firebase/app";
+import * as firebase from "firebase/app";
+import firebaseAuth from "../../firebase";
 import "firebase/auth";
 
 import { useStateValue } from "../../store";
@@ -59,8 +60,7 @@ export default function SignInDialog() {
   const [{}, dispatch] = useStateValue();
 
   function handleEmailSignIn() {
-    firebase
-      .auth()
+    firebaseAuth
       .signInWithEmailAndPassword(email, password)
       .then(function() {
         alert("success");
@@ -71,8 +71,7 @@ export default function SignInDialog() {
   }
 
   function handleGoogleSignIn() {
-    firebase
-      .auth()
+    firebaseAuth
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .then(function() {
         alert("success");
@@ -83,8 +82,7 @@ export default function SignInDialog() {
   }
 
   function handleFacebookSignIn() {
-    firebase
-      .auth()
+    firebaseAuth
       .signInWithPopup(new firebase.auth.FacebookAuthProvider())
       .then(function() {
         alert("success");

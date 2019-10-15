@@ -14,7 +14,8 @@ const theme = createMuiTheme({
       dark: "#FE6B8B"
     },
     action: {
-      selected: "rgba(33, 203, 243, .3)"
+      hover: "rgba(33, 203, 243, 0.08)",
+      selected: "rgba(33, 203, 243, 0.14)"
     }
   },
   shadows: [

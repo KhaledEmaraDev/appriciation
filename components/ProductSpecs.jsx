@@ -42,7 +42,7 @@ export default function ProductSpecs(props) {
 
   if (!specs && !comparedSpecs)
     return (
-      <Paper className={classes.root}>
+      <Paper className={classes.root} elevation={24}>
         <Typography className={classes.subheader}>
           التفاصيل قادمة قريباً
         </Typography>
