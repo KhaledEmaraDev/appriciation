@@ -1,4 +1,4 @@
-import useDatabase from "../../middlewares/useDatabase";
+import withDatabase from "../../../middlewares/withDatabase";
 
 const handler = (req, res) => {
   const {
@@ -26,4 +26,4 @@ const handler = (req, res) => {
   }
 };
 
-export default useDatabase(handler);
+export default withDatabase(handler);

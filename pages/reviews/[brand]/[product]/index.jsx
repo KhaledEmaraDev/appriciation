@@ -2,10 +2,10 @@ import "isomorphic-unfetch";
 import React from "react";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
-import ProductOverview from "../../../components/ProductOverview";
-import ProductRating from "../../../components/ProductRating";
-import ProductReviews from "../../../components/ProductReviews";
-import ProductSpecs from "../../../components/ProductSpecs";
+import ProductOverview from "../../../../components/ProductOverview";
+import ProductRating from "../../../../components/ProductRating";
+import ProductReviews from "../../../../components/ProductReviews";
+import ProductSpecs from "../../../../components/ProductSpecs";
 
 const categories = {
   phone: [

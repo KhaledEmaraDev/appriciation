@@ -282,7 +282,9 @@ export default function ProductSpecs(props) {
         variant="subtitle2"
       >
         {!isComparison
-          ? `مواصفات هاتف ${brand} ${product}`
+          ? `مواصفات هاتف ${specs ? brand : comparedBrand} ${
+              specs ? product : comparedProduct
+            }`
           : `مقارنة ما بين هاتفي ${brand} ${product} و ${comparedBrand} ${comparedProduct}`}
       </Typography>
       <Table>

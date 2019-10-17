@@ -175,14 +175,18 @@ function Review(props) {
             color="textPrimary"
           >
             مميزات هاتف{" "}
-            <Link
-              className={classes.productLink}
-              color="inherit"
-              href="/reviews/[brand]/[product]"
-              as={`/reviews/${brand}/${product}`}
-            >
-              {`${brand} ${product}`}
-            </Link>
+            {brand ? (
+              `${brand} ${product}`
+            ) : (
+              <Link
+                className={classes.productLink}
+                color="inherit"
+                href="/reviews/[brand]/[product]"
+                as={`/reviews/${review.brand}/${review.product}`}
+              >
+                {`${review.brand} ${review.product}`}
+              </Link>
+            )}
           </Typography>
           <Typography variant="body1" color="textPrimary">
             {review.pros}
@@ -195,14 +199,18 @@ function Review(props) {
             color="textPrimary"
           >
             عيوب هاتف{" "}
-            <Link
-              className={classes.productLink}
-              color="inherit"
-              href="/reviews/[brand]/[product]"
-              as=""
-            >
-              {`${brand} ${product}`}
-            </Link>
+            {brand ? (
+              `${brand} ${product}`
+            ) : (
+              <Link
+                className={classes.productLink}
+                color="inherit"
+                href="/reviews/[brand]/[product]"
+                as={`/reviews/${review.brand}/${review.product}`}
+              >
+                {`${review.brand} ${review.product}`}
+              </Link>
+            )}
           </Typography>
           <Typography variant="body1" color="textPrimary">
             {review.cons}

@@ -12,7 +12,7 @@ const client = new MongoClient(url, {
   useUnifiedTopology: true
 });
 
-const useDatabase = handler => (req, res) => {
+const withDatabase = handler => (req, res) => {
   if (!client.isConnected()) {
     return client.connect().then(() => {
       req.db = client.db(dbName);
@@ -23,4 +23,4 @@ const useDatabase = handler => (req, res) => {
   return handler(req, res);
 };
 
-export default useDatabase;
+export default withDatabase;
