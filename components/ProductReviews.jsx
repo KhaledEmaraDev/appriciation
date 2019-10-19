@@ -187,7 +187,9 @@ function Review(props) {
                 className={classes.productLink}
                 color="inherit"
                 href="/reviews/[brand]/[product]"
-                as={`/reviews/${review.brand}/${review.product}`}
+                as={`/reviews/${encodeURIComponent(
+                  review.brand
+                )}/${encodeURIComponent(review.product)}`}
               >
                 {`${review.brand} ${review.product}`}
               </Link>
@@ -211,7 +213,9 @@ function Review(props) {
                 className={classes.productLink}
                 color="inherit"
                 href="/reviews/[brand]/[product]"
-                as={`/reviews/${review.brand}/${review.product}`}
+                as={`/reviews/${encodeURIComponent(
+                  review.brand
+                )}/${encodeURIComponent(review.product)}`}
               >
                 {`${review.brand} ${review.product}`}
               </Link>

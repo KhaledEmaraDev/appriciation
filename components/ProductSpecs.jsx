@@ -307,7 +307,9 @@ export default function ProductSpecs(props) {
                 <img
                   loading="auto"
                   className={classes.thumbnail}
-                  src={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${brand} ${product}.jpg`}
+                  src={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${encodeURIComponent(
+                    brand
+                  )} ${product}.jpg`}
                   alt={`${brand} ${product}`}
                 />
               </TableCell>
@@ -315,7 +317,9 @@ export default function ProductSpecs(props) {
                 <img
                   loading="auto"
                   className={classes.thumbnail}
-                  src={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${comparedBrand} ${comparedProduct}.jpg`}
+                  src={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${encodeURIComponent(
+                    comparedBrand
+                  )} ${encodeURIComponent(comparedProduct)}.jpg`}
                   alt={`${comparedBrand} ${comparedProduct}`}
                 />
               </TableCell>
