@@ -1,3 +1,4 @@
+import "isomorphic-unfetch";
 import React from "react";
 import PropTypes from "prop-types";
 import Router from "next/router";
@@ -15,6 +16,11 @@ import {
   jssPreset,
   withStyles
 } from "@material-ui/styles";
+
+import arLocale from "date-fns/locale/ar-SA";
+import DateFnsUtils from "@date-io/date-fns";
+import format from "date-fns/format";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 
 import { StateProvider } from "../store";
 import { reducer, initialState } from "../reducer";
@@ -125,6 +131,13 @@ const styles = {
   }
 };
 
+class LocalizedUtils extends DateFnsUtils {
+  format(date, formatString) {
+    if (formatString === "MMM") formatString = "MMMM";
+    return format(date, formatString, { locale: this.locale });
+  }
+}
+
 /* eslint-disable no-dupe-keys */
 
 class MyApp extends App {
@@ -147,10 +160,12 @@ class MyApp extends App {
         <StateProvider initialState={initialState} reducer={reducer}>
           <ThemeProvider theme={theme}>
             <StylesProvider jss={jss}>
-              <CssBaseline />
-              <MainNav>
-                <Component {...pageProps} />
-              </MainNav>
+              <MuiPickersUtilsProvider utils={LocalizedUtils} locale={arLocale}>
+                <CssBaseline />
+                <MainNav>
+                  <Component {...pageProps} />
+                </MainNav>
+              </MuiPickersUtilsProvider>
             </StylesProvider>
           </ThemeProvider>
         </StateProvider>

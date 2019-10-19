@@ -11,7 +11,9 @@ export default function Index(props) {
   const { reviews } = props;
   const [{ user }, dispatch] = useStateValue();
 
-  console.log(reviews);
+  function handleReviewClick() {
+    dispatch(setDialog("review"));
+  }
 
   function handleSignUpClick() {
     dispatch(setDialog("sign-up"));
@@ -25,7 +27,7 @@ export default function Index(props) {
           subheaderTitle="اَراء مستخدمي الهواتف في مكان واحد"
           subtitle="هدفنا مساعدتك تختار"
           primaryActionText="راجع الاَن"
-          handlePrimaryAction={e => e.preventDefault()}
+          handlePrimaryAction={handleReviewClick}
           showSecondaryAction={!user}
           secondaryActionText="سجل الاَن"
           handleSecondaryAction={handleSignUpClick}

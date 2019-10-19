@@ -9,6 +9,9 @@ import Rating from "@material-ui/lab/Rating";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/styles";
 
+import { useStateValue } from "../store";
+import { setDialog } from "../actions";
+
 const useStyles = makeStyles(theme => ({
   card: {
     display: "flex"
@@ -36,6 +39,13 @@ export default function ProductOverview(props) {
   const classes = useStyles();
   const { brand, product, rating, imageExists } = props;
 
+  // eslint-disable-next-line no-empty-pattern
+  const [{}, dispatch] = useStateValue();
+
+  function handleReviewClick() {
+    dispatch(setDialog("review"));
+  }
+
   return (
     <React.Fragment>
       {imageExists && (
@@ -46,7 +56,7 @@ export default function ProductOverview(props) {
           />
         </Head>
       )}
-      <Card className={classes.card} elevation={24}>
+      <Card className={classes.card} elevation={25}>
         {imageExists && (
           <CardMedia
             component="img"
@@ -64,7 +74,9 @@ export default function ProductOverview(props) {
             <Rating value={rating} readOnly />
           </CardContent>
           <div className={classes.controls}>
-            <Button color="red">راجع الاَن</Button>
+            <Button color="red" onClick={handleReviewClick}>
+              راجع الاَن
+            </Button>
           </div>
         </div>
       </Card>

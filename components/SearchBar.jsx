@@ -86,10 +86,11 @@ const useStyles = makeStyles(theme => ({
   },
   suggestionsContainerOpen: {
     position: "absolute",
-    zIndex: 1,
+    zIndex: theme.zIndex.modal + 1,
     marginTop: theme.spacing(1),
     left: 0,
-    right: 0
+    right: 0,
+    boxShadow: theme.shadows[8]
   },
   suggestion: {
     display: "block"

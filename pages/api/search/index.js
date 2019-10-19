@@ -11,8 +11,8 @@ const handler = (req, res) => {
     case "GET": {
       const collection = db.collection("products");
       collection
-        .find({ $text: { $search: query } }, { score: { $meta: "textScore" } })
-        .project({ _id: false, score: { $meta: "textScore" } })
+        .find({ $text: { $search: query } })
+        .project({ score: { $meta: "textScore" } })
         .sort({ score: { $meta: "textScore" } })
         .limit(5)
         .toArray()

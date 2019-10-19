@@ -16,6 +16,9 @@ const useStyles = makeStyles(theme => ({
     fontFamily: theme.typography.fontFamily,
     fontWeight: 500,
     lineHeight: 1.5
+  },
+  center: {
+    textAlign: "center"
   }
 }));
 
@@ -24,7 +27,7 @@ export default function ProductRating(props) {
   const { brand, product, ratings } = props;
 
   return (
-    <Paper className={classes.root} elevation={24}>
+    <Paper className={classes.root} elevation={25}>
       <Typography
         className={classes.subheader}
         component="h1"
@@ -35,9 +38,11 @@ export default function ProductRating(props) {
           ratings.map(rating => (
             <React.Fragment key={rating.category}>
               <Grid item xs={6} sm={3}>
-                <Typography variant="subtitle2">{rating.category}:</Typography>
+                <Typography variant="subtitle2" align="center">
+                  {rating.category}:
+                </Typography>
               </Grid>
-              <Grid item xs={6} sm={3}>
+              <Grid className={classes.center} item xs={6} sm={3}>
                 <Rating value={rating.value} readOnly />
               </Grid>
             </React.Fragment>

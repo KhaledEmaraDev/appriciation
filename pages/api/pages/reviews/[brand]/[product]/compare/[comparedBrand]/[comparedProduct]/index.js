@@ -1,4 +1,4 @@
-import withDatabase from "../../../../../../../../middlewares/withDatabase";
+import withDatabase from "../../../../../../../../../middlewares/withDatabase";
 
 const handler = (req, res) => {
   const {
@@ -9,16 +9,19 @@ const handler = (req, res) => {
 
   switch (method) {
     case "GET": {
-      const specsPromise = db.collection("specs").findOne({ brand, product });
+      const specsPromise = db
+        .collection("products")
+        .findOne({ brand, product });
+
       const comparedSpecsPromise = db
-        .collection("specs")
+        .collection("products")
         .findOne({ brand: comparedBrand, product: comparedProduct });
 
       Promise.all([specsPromise, comparedSpecsPromise])
         .then(results =>
           res.status(200).json({
-            specs: results[0],
-            comparedSpecs: results[1]
+            specs: results[0].specs,
+            comparedSpecs: results[1].specs
           })
         )
         .catch(err => {

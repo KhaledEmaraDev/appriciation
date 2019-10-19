@@ -19,7 +19,7 @@ import firebaseAuth from "../../firebase";
 import "firebase/auth";
 
 import { useStateValue } from "../../store";
-import { setDialog } from "../../actions";
+import { setDialog, showSnackbar } from "../../actions";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function SignInDialog() {
+export default function SignUpDialog() {
   const classes = useStyles();
   const [firstName, setFirstName] = useState("");
   const [secondName, setLastName] = useState("");
@@ -73,10 +73,10 @@ export default function SignInDialog() {
     firebaseAuth
       .createUserWithEmailAndPassword(email, password)
       .then(function() {
-        alert("success");
+        dispatch(showSnackbar("success", "تم التسجيل بنجاح"));
       })
       .catch(function(error) {
-        alert(error.message);
+        dispatch(showSnackbar("error", error.message));
       });
   }
 
@@ -84,10 +84,10 @@ export default function SignInDialog() {
     firebaseAuth
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .then(function() {
-        alert("success");
+        dispatch(showSnackbar("success", "تم التسجيل بنجاح"));
       })
       .catch(function(error) {
-        alert(error.message);
+        dispatch(showSnackbar("error", error.message));
       });
   }
 
@@ -95,10 +95,10 @@ export default function SignInDialog() {
     firebaseAuth
       .signInWithPopup(new firebase.auth.FacebookAuthProvider())
       .then(function() {
-        alert("success");
+        dispatch(showSnackbar("success", "تم التسجيل بنجاح"));
       })
       .catch(function(error) {
-        alert(error.message);
+        dispatch(showSnackbar("error", error.message));
       });
   }
 

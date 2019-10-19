@@ -67,6 +67,9 @@ const useStyles = makeStyles(theme => ({
   },
   productLink: {
     textDecorationLine: "underline"
+  },
+  center: {
+    textAlign: "center"
   }
 }));
 
@@ -113,16 +116,18 @@ function Review(props) {
               )}
             </div>
             {review.ratings && (
-              <IconButton
-                edge="end"
-                className={clsx(classes.expand, {
-                  [classes.expandOpen]: expanded
-                })}
-                aria-expanded={expanded}
-                aria-label="show more"
-              >
-                <ExpandMoreIcon />
-              </IconButton>
+              <div>
+                <IconButton
+                  edge="end"
+                  className={clsx(classes.expand, {
+                    [classes.expandOpen]: expanded
+                  })}
+                  aria-expanded={expanded}
+                  aria-label="show more"
+                >
+                  <ExpandMoreIcon />
+                </IconButton>
+              </div>
             )}
           </div>
           {review.date_buy && (
@@ -231,7 +236,7 @@ export default function ProductReviews(props) {
   const { title, brand, product, reviews } = props;
 
   return (
-    <Paper elevation={24}>
+    <Paper elevation={25}>
       <List
         subheader={
           <ListSubheader>

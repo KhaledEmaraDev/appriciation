@@ -16,7 +16,7 @@ import firebaseAuth from "../../firebase";
 import "firebase/auth";
 
 import { useStateValue } from "../../store";
-import { setDialog } from "../../actions";
+import { setDialog, showSnackbar } from "../../actions";
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -63,10 +63,10 @@ export default function SignInDialog() {
     firebaseAuth
       .signInWithEmailAndPassword(email, password)
       .then(function() {
-        alert("success");
+        dispatch(showSnackbar("success", "تم تسجيل الدخول بنجاح"));
       })
       .catch(function(error) {
-        alert(error.message);
+        dispatch(showSnackbar("error", error.message));
       });
   }
 
@@ -74,10 +74,10 @@ export default function SignInDialog() {
     firebaseAuth
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .then(function() {
-        alert("success");
+        dispatch(showSnackbar("success", "تم تسجيل الدخول بنجاح"));
       })
       .catch(function(error) {
-        alert(error.message);
+        dispatch(showSnackbar("error", error.message));
       });
   }
 
@@ -85,10 +85,10 @@ export default function SignInDialog() {
     firebaseAuth
       .signInWithPopup(new firebase.auth.FacebookAuthProvider())
       .then(function() {
-        alert("success");
+        dispatch(showSnackbar("success", "تم تسجيل الدخول بنجاح"));
       })
       .catch(function(error) {
-        alert(error.message);
+        dispatch(showSnackbar("error", error.message));
       });
   }
 

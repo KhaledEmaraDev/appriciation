@@ -1,4 +1,3 @@
-import "isomorphic-unfetch";
 import React, { useEffect } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
@@ -32,9 +31,13 @@ import MenuIcon from "@material-ui/icons/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MuiLink from "@material-ui/core/Link";
 import RateReviewIcon from "@material-ui/icons/RateReview";
+import ReviewDialog from "../components/dialogs/ReviewDialog";
 import SearchBar from "./SearchBar";
 import SignInDialog from "../components/dialogs/SignInDialog";
 import SignUpDialog from "../components/dialogs/SignUpDialog";
+import SignUpPromptDialog from "../components/dialogs/SignUpPromptDialog";
+import Snackbar from "@material-ui/core/Snackbar";
+import SnackbarContentWrapper from "../components/SnackbarContentWrapper";
 import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -45,7 +48,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import firebaseAuth from "../firebase";
 
 import { useStateValue } from "../store";
-import { setUser, setDialog } from "../actions";
+import { setUser, setDialog, setSnackbar } from "../actions";
 
 function ElevationScroll(props) {
   const { children, window } = props;
@@ -190,7 +193,7 @@ export default function MainNav(props) {
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
   const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-  const [{ user, dialog }, dispatch] = useStateValue();
+  const [{ user, dialog, snackbar }, dispatch] = useStateValue();
 
   useEffect(() => {
     firebaseAuth.onAuthStateChanged(user => {
@@ -271,6 +274,23 @@ export default function MainNav(props) {
   const handleProductSelected = suggestion => {
     const { brand, product } = suggestion;
     router.push("/reviews/[brand]/[product]", `/reviews/${brand}/${product}`);
+  };
+
+  const processQueue = () => {
+    if (snackbar.queue.length > 0) {
+      dispatch(setSnackbar(true, snackbar.queue.shift()));
+    }
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    dispatch(setSnackbar(false));
+  };
+
+  const handleSnackbarExited = () => {
+    processQueue();
   };
 
   const menuId = "primary-search-account-menu";
@@ -428,7 +448,7 @@ export default function MainNav(props) {
                 />
               </Link>
               <SearchBar
-                id="product-search"
+                id="main-product-search"
                 placeholder="ابحث عن منتج"
                 onFocus={handleSearchFocus(true)}
                 onBlur={handleSearchFocus(false)}
@@ -520,6 +540,44 @@ export default function MainNav(props) {
       >
         <SignUpDialog />
       </Dialog>
+      <Dialog
+        open={dialog === "sign-up-prompt"}
+        onClose={handleDialogClose}
+        aria-labelledby="sign-up-prompt-dialog"
+      >
+        <SignUpPromptDialog />
+      </Dialog>
+      <Dialog
+        open={dialog === "review"}
+        onClose={handleDialogClose}
+        aria-labelledby="review-dialog"
+      >
+        <ReviewDialog />
+      </Dialog>
+      <Snackbar
+        key={snackbar.messageInfo ? snackbar.messageInfo.key : undefined}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center"
+        }}
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        onExited={handleSnackbarExited}
+        ContentProps={{
+          "aria-describedby": "message-id"
+        }}
+      >
+        <SnackbarContentWrapper
+          onClose={handleSnackbarClose}
+          variant={
+            snackbar.messageInfo ? snackbar.messageInfo.variant : undefined
+          }
+          message={
+            snackbar.messageInfo ? snackbar.messageInfo.message : undefined
+          }
+        />
+      </Snackbar>
     </React.Fragment>
   );
 }

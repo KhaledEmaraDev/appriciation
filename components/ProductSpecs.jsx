@@ -42,7 +42,7 @@ export default function ProductSpecs(props) {
 
   if (!specs && !comparedSpecs)
     return (
-      <Paper className={classes.root} elevation={24}>
+      <Paper className={classes.root} elevation={25}>
         <Typography className={classes.subheader}>
           التفاصيل قادمة قريباً
         </Typography>
@@ -275,7 +275,7 @@ export default function ProductSpecs(props) {
   const comparedRows = isComparison ? getRows(comparedSpecs) : null;
 
   return (
-    <Paper className={classes.root} elevation={24}>
+    <Paper className={classes.root} elevation={25}>
       <Typography
         className={classes.subheader}
         component="h1"

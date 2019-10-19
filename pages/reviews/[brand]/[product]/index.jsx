@@ -1,4 +1,3 @@
-import "isomorphic-unfetch";
 import React from "react";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
@@ -52,7 +51,7 @@ export default function Reviews(props) {
 Reviews.getInitialProps = async ({ query }) => {
   const { brand, product } = query;
   const res = await fetch(
-    `http://localhost:3000/api/reviews/${brand}/${product}`
+    `http://localhost:3000/api/pages/reviews/${brand}/${product}`
   );
   const json = await res.json();
   return {
