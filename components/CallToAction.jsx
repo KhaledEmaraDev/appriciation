@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => {
   const headerShadow = "4px 4px 20px 1px rgba(33, 203, 243, .3)";
   return {
     card: {
-      borderRadius: theme.spacing(0.5),
+      borderRadius: theme.shape.borderRadius,
       transition: "0.3s",
       boxShadow: cardShadow,
       position: "relative",

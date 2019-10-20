@@ -6,23 +6,20 @@ import ProductRating from "../../../../components/ProductRating";
 import ProductReviews from "../../../../components/ProductReviews";
 import ProductSpecs from "../../../../components/ProductSpecs";
 
-const categories = {
-  phone: [
-    "جودة التصنيع",
-    "واجهة المستخدم",
-    "القيمة للسعر",
-    "الكاميرا",
-    "جودة المكالمات",
-    "البطارية"
-  ]
-};
-
 export default function Reviews(props) {
-  const { brand, product, rating, ratings, specs, reviews } = props;
+  const {
+    brand,
+    product,
+    ratings_buckets,
+    rating,
+    ratings,
+    specs,
+    reviews
+  } = props;
 
-  const namedRatings = ratings.map((rating, index) => ({
-    category: categories.phone[index],
-    value: rating
+  const namedRatings = ratings_buckets.map((bucket, index) => ({
+    category: bucket,
+    value: ratings[index]
   }));
 
   return (
@@ -51,22 +48,26 @@ export default function Reviews(props) {
 Reviews.getInitialProps = async ({ query }) => {
   const { brand, product } = query;
   const res = await fetch(
-    `http://localhost:3000/api/pages/reviews/${brand}/${product}`
+    `http://localhost:3000/api/pages/review/${encodeURIComponent(
+      brand
+    )}/${encodeURIComponent(product)}`
   );
-  const json = await res.json();
+  const result = await res.json();
   return {
     brand,
     product,
-    rating: json.rating,
-    ratings: json.ratings,
-    specs: json.specs,
-    reviews: json.reviews
+    ratings_buckets: result.ratings_buckets,
+    rating: result.rating,
+    ratings: result.ratings,
+    specs: result.specs,
+    reviews: result.reviews
   };
 };
 
 Reviews.propTypes = {
   brand: PropTypes.string.isRequired,
   product: PropTypes.string.isRequired,
+  ratings_buckets: PropTypes.object,
   rating: PropTypes.number,
   ratings: PropTypes.array,
   specs: PropTypes.object,

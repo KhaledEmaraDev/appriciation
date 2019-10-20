@@ -1,18 +1,22 @@
-import withDatabase from "../../../middlewares/withDatabase";
+import withDatabase from "../../../../middlewares/withDatabase";
 
 const handler = (req, res) => {
-  const { body, method, db, session } = req;
+  const { body, method, db } = req;
 
   switch (method) {
     case "POST": {
       if (!body) return res.sendStatus(400);
 
-      const review = { ...body.review, date_rev: new Date() };
-      if (session.decodedToken) review.user = session.decodedToken.uid;
+      const user = {
+        _id: body.user.uid,
+        name: body.user.name,
+        avatar: body.user.avatar
+      };
+      if (body.user.email) user.email = body.user.email;
 
-      db.collection("reviews")
-        .insertOne(review)
-        .then(() => res.json({ status: true, message: "تم النشر بنجاح" }))
+      db.collection("users")
+        .insertOne(user)
+        .then(() => res.json({ status: true }))
         .catch(error => {
           console.log(error);
           res.json({ error });

@@ -34,14 +34,14 @@ ComparedReviews.getInitialProps = async ({ query }) => {
   const res = await fetch(
     `http://localhost:3000/api/pages/reviews/${brand}/${product}/compare/${comparedBrand}/${comparedProduct}`
   );
-  const json = await res.json();
+  const result = await res.json();
   return {
     brand,
     product,
     comparedBrand,
     comparedProduct,
-    specs: json.specs,
-    comparedSpecs: json.comparedSpecs
+    specs: result.specs,
+    comparedSpecs: result.comparedSpecs
   };
 };
 

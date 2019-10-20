@@ -1,4 +1,4 @@
-import withDatabase from "../../../middlewares/withDatabase";
+import withDatabase from "../../../..middlewares/withDatabase";
 
 const handler = (req, res) => {
   const {
@@ -16,8 +16,11 @@ const handler = (req, res) => {
         .sort({ score: { $meta: "textScore" } })
         .limit(5)
         .toArray()
-        .then(docs => res.status(200).json(docs))
-        .catch(err => res.status(404).json(err));
+        .then(products => res.json({ status: true, products }))
+        .catch(error => {
+          console.log(error);
+          res.json({ error });
+        });
       break;
     }
     default:

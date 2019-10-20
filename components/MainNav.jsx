@@ -201,10 +201,8 @@ export default function MainNav(props) {
         dispatch(setUser(user));
         dispatch(setDialog(null));
         return user.getIdToken().then(token => {
-          // eslint-disable-next-line no-undef
-          return fetch("/api/login", {
+          return fetch("/api/account/signin", {
             method: "POST",
-            // eslint-disable-next-line no-undef
             headers: new Headers({ "Content-Type": "application/json" }),
             credentials: "same-origin",
             body: JSON.stringify({ token })
@@ -212,8 +210,7 @@ export default function MainNav(props) {
         });
       } else {
         dispatch(setUser(null));
-        // eslint-disable-next-line no-undef
-        fetch("/api/logout", {
+        fetch("/api/account/signout", {
           method: "POST",
           credentials: "same-origin"
         });

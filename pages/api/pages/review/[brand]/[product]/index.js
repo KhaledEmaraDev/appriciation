@@ -72,16 +72,18 @@ const handler = (req, res) => {
 
       Promise.all([specsPromise, ratingsPromise, reviewsPromise])
         .then(results =>
-          res.status(200).json({
+          res.json({
+            status: true,
             specs: results[0].specs,
+            ratings_buckets: results[0].ratings_buckets,
             rating: results[1] ? results[1].rating : null,
             ratings: results[1] ? results[1].ratings : null,
             reviews: results[2]
           })
         )
-        .catch(err => {
-          console.log(err);
-          res.status(404).json(err);
+        .catch(error => {
+          console.log(error);
+          res.json({ error });
         });
       break;
     }

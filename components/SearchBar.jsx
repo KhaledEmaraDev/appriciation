@@ -110,9 +110,13 @@ export default function SearchBar(props) {
   const handleSuggestionsFetchRequested = ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
     if (inputValue.length === 0) return setSuggestions([]);
-    fetch(`http://localhost:3000/api/search?query=${inputValue}`)
+    fetch(
+      `http://localhost:3000/api/search/products?query=${encodeURIComponent(
+        inputValue
+      )}`
+    )
       .then(res => res.json())
-      .then(json => setSuggestions(json));
+      .then(result => setSuggestions(result.products));
   };
 
   const handleSuggestionsClearRequested = () => {

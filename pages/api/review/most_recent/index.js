@@ -5,8 +5,7 @@ const handler = (req, res) => {
 
   switch (method) {
     case "GET": {
-      const reviewsPromise = db
-        .collection("reviews")
+      db.collection("reviews")
         .aggregate([
           {
             $match: { user: { $exists: true, $ne: null } }
@@ -30,17 +29,16 @@ const handler = (req, res) => {
           },
           { $project: { userData: false } }
         ])
-        .toArray();
-
-      reviewsPromise
-        .then(result =>
+        .toArray()
+        .then(reviews =>
           res.status(200).json({
-            reviews: result
+            status: true,
+            reviews
           })
         )
-        .catch(err => {
-          console.log(err);
-          res.status(404).json(err);
+        .catch(error => {
+          console.log(error);
+          res.json({ error });
         });
       break;
     }

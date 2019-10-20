@@ -61,10 +61,13 @@ const useStyles = makeStyles(theme => ({
 export default function SignUpDialog() {
   const classes = useStyles();
   const [firstName, setFirstName] = useState("");
-  const [secondName, setLastName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [reviewer, setReviewer] = useState(false);
+  const [youtubeURL, setYouTubeURL] = useState(false);
+  const [twitterURL, setTwitterURL] = useState(false);
+  const [facebookURL, setFacebookURL] = useState(false);
 
   // eslint-disable-next-line no-empty-pattern
   const [{}, dispatch] = useStateValue();
@@ -72,10 +75,36 @@ export default function SignUpDialog() {
   function handleEmailSignUp() {
     firebaseAuth
       .createUserWithEmailAndPassword(email, password)
-      .then(function() {
-        dispatch(showSnackbar("success", "تم التسجيل بنجاح"));
+      .then(result => {
+        if (result.additionalUserInfo.isNewUser) {
+          const user = result.user;
+
+          const updatePromise = user.updateProfile({
+            displayName: `${firstName} ${lastName}`
+          });
+
+          const signupPromise = fetch("/api/account/signup", {
+            method: "POST",
+            headers: new Headers({ "Content-Type": "application/json" }),
+            credentials: "same-origin",
+            body: JSON.stringify({
+              user: {
+                uid: user.uid,
+                email: user.email,
+                name: user.displayName,
+                avatar: user.photoURL,
+                youtube: youtubeURL,
+                twitter: twitterURL,
+                facebook: facebookURL
+              }
+            })
+          });
+
+          return Promise.all([signupPromise, updatePromise]);
+        }
       })
-      .catch(function(error) {
+      .then(() => dispatch(showSnackbar("success", "تم التسجيل بنجاح")))
+      .catch(error => {
         dispatch(showSnackbar("error", error.message));
       });
   }
@@ -83,10 +112,33 @@ export default function SignUpDialog() {
   function handleGoogleSignUp() {
     firebaseAuth
       .signInWithPopup(new firebase.auth.GoogleAuthProvider())
-      .then(function() {
-        dispatch(showSnackbar("success", "تم التسجيل بنجاح"));
+      .then(result => {
+        if (result.additionalUserInfo.isNewUser) {
+          const user = result.user;
+          return fetch("/api/account/signup", {
+            method: "POST",
+            headers: new Headers({ "Content-Type": "application/json" }),
+            credentials: "same-origin",
+            body: JSON.stringify({
+              user: {
+                uid: user.uid,
+                email: user.email
+                  ? user.email
+                  : user.providerData.length > 0 && user.providerData[0].email
+                  ? user.providerData[0].email
+                  : null,
+                name: user.displayName,
+                avatar: user.photoURL,
+                youtube: youtubeURL,
+                twitter: twitterURL,
+                facebook: facebookURL
+              }
+            })
+          });
+        }
       })
-      .catch(function(error) {
+      .then(() => dispatch(showSnackbar("success", "تم التسجيل بنجاح")))
+      .catch(error => {
         dispatch(showSnackbar("error", error.message));
       });
   }
@@ -94,10 +146,33 @@ export default function SignUpDialog() {
   function handleFacebookSignUp() {
     firebaseAuth
       .signInWithPopup(new firebase.auth.FacebookAuthProvider())
-      .then(function() {
-        dispatch(showSnackbar("success", "تم التسجيل بنجاح"));
+      .then(result => {
+        if (result.additionalUserInfo.isNewUser) {
+          const user = result.user;
+          return fetch("/api/account/signup", {
+            method: "POST",
+            headers: new Headers({ "Content-Type": "application/json" }),
+            credentials: "same-origin",
+            body: JSON.stringify({
+              user: {
+                uid: user.uid,
+                email: user.email
+                  ? user.email
+                  : user.providerData.length > 0 && user.providerData[0].email
+                  ? user.providerData[0].email
+                  : null,
+                name: user.displayName,
+                avatar: user.photoURL,
+                youtube: youtubeURL,
+                twitter: twitterURL,
+                facebook: facebookURL
+              }
+            })
+          });
+        }
       })
-      .catch(function(error) {
+      .then(() => dispatch(showSnackbar("success", "تم التسجيل بنجاح")))
+      .catch(error => {
         dispatch(showSnackbar("error", error.message));
       });
   }
@@ -143,6 +218,7 @@ export default function SignUpDialog() {
               fullWidth
               id="firstName"
               label="الاسم الأول"
+              value={firstName}
               onChange={e => setFirstName(e.target.value)}
             />
           </Grid>
@@ -155,6 +231,7 @@ export default function SignUpDialog() {
               label="الاسم الأخير"
               name="lastName"
               autoComplete="lname"
+              value={lastName}
               onChange={e => setLastName(e.target.value)}
             />
           </Grid>
@@ -167,6 +244,7 @@ export default function SignUpDialog() {
               label="البريد الألكتروني"
               name="email"
               autoComplete="email"
+              value={email}
               onChange={e => setEmail(e.target.value)}
             />
           </Grid>
@@ -180,6 +258,7 @@ export default function SignUpDialog() {
               type="password"
               id="password"
               autoComplete="current-password"
+              value={password}
               onChange={e => setPassword(e.target.value)}
             />
           </Grid>
@@ -214,7 +293,8 @@ export default function SignUpDialog() {
                 label="قناة يوتيوب"
                 id="youtubeURL"
                 autoComplete="url"
-                onChange={e => setPassword(e.target.value)}
+                value={youtubeURL}
+                onChange={e => setYouTubeURL(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -225,7 +305,8 @@ export default function SignUpDialog() {
                 label="حساب تويتر"
                 id="twitterURL"
                 autoComplete="url"
-                onChange={e => setPassword(e.target.value)}
+                value={twitterURL}
+                onChange={e => setTwitterURL(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -236,7 +317,8 @@ export default function SignUpDialog() {
                 label="صفحة فيسبوك"
                 id="facebookURL"
                 autoComplete="url"
-                onChange={e => setPassword(e.target.value)}
+                value={facebookURL}
+                onChange={e => setFacebookURL(e.target.value)}
               />
             </Grid>
           </Grid>

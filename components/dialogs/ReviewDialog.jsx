@@ -71,7 +71,9 @@ export default function ReviewDialog(props) {
     if (!review.product || review.ratings_buckets) return;
     setLoading(true);
     fetch(
-      `http://localhost:3000/api/pages/dialogs/review?brand=${review.brand}&product=${review.product}`
+      `http://localhost:3000/api/pages/dialogs/review?brand=${encodeURIComponent(
+        review.brand
+      )}&product=${encodeURIComponent(review.product)}`
     )
       .then(res => res.json())
       .then(json => {
@@ -162,24 +164,26 @@ export default function ReviewDialog(props) {
       headers: new Headers({ "Content-Type": "application/json" }),
       credentials: "same-origin",
       body: JSON.stringify({
-        brand,
-        product,
-        date_buy,
-        pros,
-        cons,
-        ratings,
-        brand_rating,
-        brand_pros,
-        brand_cons
+        review: {
+          brand,
+          product,
+          date_buy,
+          pros,
+          cons,
+          ratings,
+          brand_rating,
+          brand_pros,
+          brand_cons
+        }
       })
     })
       .then(res => {
         if (!res.ok) throw new Error("حدث خطأ في الاتصال");
         return res.json();
       })
-      .then(json => {
+      .then(result => {
         dispatch(setDialog(null));
-        json && dispatch(showSnackbar("success", json.message));
+        dispatch(showSnackbar("success", result.message));
       })
       .catch(err => {
         dispatch(setDialog(null));

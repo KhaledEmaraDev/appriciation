@@ -86,10 +86,10 @@ export default function Index(props) {
 }
 
 Index.getInitialProps = async () => {
-  const res = await fetch(`http://localhost:3000/api/reviews/most_recent`);
-  const json = await res.json();
+  const res = await fetch(`http://localhost:3000/api/review/most_recent`);
+  const result = await res.json();
   return {
-    reviews: json.reviews
+    reviews: result.reviews
   };
 };
 
