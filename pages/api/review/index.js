@@ -27,8 +27,3 @@ const handler = (req, res) => {
 
 export default withDatabase(handler);
 
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};

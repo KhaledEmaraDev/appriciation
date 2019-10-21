@@ -196,7 +196,7 @@ export default function MainNav(props) {
   const [{ user, dialog, snackbar }, dispatch] = useStateValue();
 
   useEffect(() => {
-    firebaseAuth.onAuthStateChanged(user => {
+    const unregisterAuthObserver = firebaseAuth.onAuthStateChanged(user => {
       if (user) {
         dispatch(setUser(user));
         dispatch(setDialog(null));
@@ -216,7 +216,11 @@ export default function MainNav(props) {
         });
       }
     });
-  }, [firebaseAuth]);
+
+    return () => {
+      unregisterAuthObserver();
+    };
+  }, [dispatch]);
 
   const handleProfileMenuOpen = event => {
     setAnchorEl(event.currentTarget);

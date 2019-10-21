@@ -1,9 +1,7 @@
+import withFirebase from "../../../../middlewares/withFirebase";
+
 const handler = (req, res) => {
-  const {
-    req: { firebase },
-    body,
-    method
-  } = req;
+  const { firebase, body, method } = req;
 
   switch (method) {
     case "POST": {
@@ -31,10 +29,5 @@ const handler = (req, res) => {
   }
 };
 
-export default handler;
+export default withFirebase(handler);
 
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};

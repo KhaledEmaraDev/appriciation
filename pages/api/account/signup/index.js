@@ -13,6 +13,9 @@ const handler = (req, res) => {
         avatar: body.user.avatar
       };
       if (body.user.email) user.email = body.user.email;
+      if (body.user.youtube) user.youtube = body.user.youtube;
+      if (body.user.twitter) user.twitter = body.user.twitter;
+      if (body.user.facebook) user.facebook = body.user.facebook;
 
       db.collection("users")
         .insertOne(user)
@@ -31,8 +34,3 @@ const handler = (req, res) => {
 
 export default withDatabase(handler);
 
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};

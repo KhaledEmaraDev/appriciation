@@ -72,34 +72,36 @@ export default function SignUpDialog() {
   // eslint-disable-next-line no-empty-pattern
   const [{}, dispatch] = useStateValue();
 
+  function handleSignUp(user, name) {
+    return fetch("/api/account/signup", {
+      method: "POST",
+      headers: new Headers({ "Content-Type": "application/json" }),
+      credentials: "same-origin",
+      body: JSON.stringify({
+        user: {
+          uid: user.uid,
+          email: user.email,
+          name: name ? name : user.displayName,
+          avatar: user.photoURL,
+          youtube: youtubeURL,
+          twitter: twitterURL,
+          facebook: facebookURL
+        }
+      })
+    });
+  }
+
   function handleEmailSignUp() {
     firebaseAuth
       .createUserWithEmailAndPassword(email, password)
       .then(result => {
         if (result.additionalUserInfo.isNewUser) {
           const user = result.user;
-
+          const name = `${firstName} ${lastName}`;
           const updatePromise = user.updateProfile({
-            displayName: `${firstName} ${lastName}`
+            displayName: name
           });
-
-          const signupPromise = fetch("/api/account/signup", {
-            method: "POST",
-            headers: new Headers({ "Content-Type": "application/json" }),
-            credentials: "same-origin",
-            body: JSON.stringify({
-              user: {
-                uid: user.uid,
-                email: user.email,
-                name: user.displayName,
-                avatar: user.photoURL,
-                youtube: youtubeURL,
-                twitter: twitterURL,
-                facebook: facebookURL
-              }
-            })
-          });
-
+          const signupPromise = handleSignUp(user, name);
           return Promise.all([signupPromise, updatePromise]);
         }
       })
@@ -115,26 +117,7 @@ export default function SignUpDialog() {
       .then(result => {
         if (result.additionalUserInfo.isNewUser) {
           const user = result.user;
-          return fetch("/api/account/signup", {
-            method: "POST",
-            headers: new Headers({ "Content-Type": "application/json" }),
-            credentials: "same-origin",
-            body: JSON.stringify({
-              user: {
-                uid: user.uid,
-                email: user.email
-                  ? user.email
-                  : user.providerData.length > 0 && user.providerData[0].email
-                  ? user.providerData[0].email
-                  : null,
-                name: user.displayName,
-                avatar: user.photoURL,
-                youtube: youtubeURL,
-                twitter: twitterURL,
-                facebook: facebookURL
-              }
-            })
-          });
+          return handleSignUp(user);
         }
       })
       .then(() => dispatch(showSnackbar("success", "تم التسجيل بنجاح")))
@@ -149,26 +132,7 @@ export default function SignUpDialog() {
       .then(result => {
         if (result.additionalUserInfo.isNewUser) {
           const user = result.user;
-          return fetch("/api/account/signup", {
-            method: "POST",
-            headers: new Headers({ "Content-Type": "application/json" }),
-            credentials: "same-origin",
-            body: JSON.stringify({
-              user: {
-                uid: user.uid,
-                email: user.email
-                  ? user.email
-                  : user.providerData.length > 0 && user.providerData[0].email
-                  ? user.providerData[0].email
-                  : null,
-                name: user.displayName,
-                avatar: user.photoURL,
-                youtube: youtubeURL,
-                twitter: twitterURL,
-                facebook: facebookURL
-              }
-            })
-          });
+          return handleSignUp(user);
         }
       })
       .then(() => dispatch(showSnackbar("success", "تم التسجيل بنجاح")))
