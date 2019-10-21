@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import CallToAction from "../components/CallToAction";
 import Carousel from "../components/Carousel";
@@ -46,31 +46,40 @@ const popularSlides = [
   }
 ];
 
-export default function Index(props) {
-  const { reviews } = props;
+function MainCallToAction() {
   const [{ user }, dispatch] = useStateValue();
 
-  function handleReviewClick() {
-    dispatch(setDialog("review"));
-  }
+  return useMemo(() => {
+    function handleReviewClick() {
+      dispatch(setDialog("review"));
+    }
 
-  function handleSignUpClick() {
-    dispatch(setDialog("sign-up"));
-  }
+    function handleSignUpClick() {
+      dispatch(setDialog("sign-up"));
+    }
+
+    return (
+      <CallToAction
+        headerTitle="أول منصة لمراجعات المستخدمين بالشرق الأوسط"
+        subheaderTitle="اَراء مستخدمي الهواتف في مكان واحد"
+        subtitle="هدفنا مساعدتك تختار"
+        primaryActionText="راجع الاَن"
+        handlePrimaryAction={handleReviewClick}
+        showSecondaryAction={!user}
+        secondaryActionText="سجل الاَن"
+        handleSecondaryAction={handleSignUpClick}
+      />
+    );
+  }, [dispatch, user]);
+}
+
+export default function Index(props) {
+  const { reviews } = props;
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <CallToAction
-          headerTitle="أول منصة لمراجعات المستخدمين بالشرق الأوسط"
-          subheaderTitle="اَراء مستخدمي الهواتف في مكان واحد"
-          subtitle="هدفنا مساعدتك تختار"
-          primaryActionText="راجع الاَن"
-          handlePrimaryAction={handleReviewClick}
-          showSecondaryAction={!user}
-          secondaryActionText="سجل الاَن"
-          handleSecondaryAction={handleSignUpClick}
-        />
+        <MainCallToAction />
       </Grid>
       <Grid item xs={12}>
         <ProductReviews title="أخر المراجعات" reviews={reviews} />

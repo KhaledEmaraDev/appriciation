@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "../Button";
 import Container from "@material-ui/core/Container";
@@ -28,7 +28,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignUpPromptDialog() {
   const classes = useStyles();
-
   const [
     {
       forms: { review }

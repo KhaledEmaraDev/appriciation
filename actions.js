@@ -3,7 +3,8 @@ export const actionTypes = {
   SET_DIALOG: "SET_DIALOG",
   SHOW_SNACKBAR: "SHOW_SNACKBAR",
   SET_SNACKBAR: "SET_SNACKBAR",
-  FILL_FORM: "FILL_FORM"
+  FILL_FORM: "FILL_FORM",
+  SET_MENU_ANCHOR: "SET_MENU_ANCHOR"
 };
 
 export function setUser(user) {
@@ -42,5 +43,13 @@ export function fillForm(form, field, value) {
     form,
     field,
     value
+  };
+}
+
+export function setMenuAnchor(menu, anchor) {
+  return {
+    type: actionTypes.SET_MENU_ANCHOR,
+    menu,
+    anchor
   };
 }

@@ -4,6 +4,7 @@ export const initialState = {
   user: null,
   dialog: null,
   snackbar: { queue: [], open: false, messageInfo: undefined },
+  menus: { account: null },
   forms: {
     review: {
       brand: null,
@@ -75,6 +76,15 @@ export const reducer = (state, action) => {
             ...state.forms[action.form],
             [action.field]: action.value
           }
+        }
+      };
+
+    case actionTypes.SET_MENU_ANCHOR:
+      return {
+        ...state,
+        menus: {
+          ...state.menus,
+          [action.menu]: action.anchor
         }
       };
 

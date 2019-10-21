@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import Head from "next/head";
 import Button from "./Button";
@@ -35,16 +35,26 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function ProductOverview(props) {
-  const classes = useStyles();
-  const { brand, product, rating, imageExists } = props;
-
+function ReviewButton() {
   // eslint-disable-next-line no-empty-pattern
   const [{}, dispatch] = useStateValue();
 
-  function handleReviewClick() {
-    dispatch(setDialog("review"));
-  }
+  return useMemo(() => {
+    function handleReviewClick() {
+      dispatch(setDialog("review"));
+    }
+
+    return (
+      <Button color="red" onClick={handleReviewClick}>
+        راجع الاَن
+      </Button>
+    );
+  }, [dispatch]);
+}
+
+export default function ProductOverview(props) {
+  const classes = useStyles();
+  const { brand, product, rating, imageExists } = props;
 
   return (
     <React.Fragment>
@@ -78,9 +88,7 @@ export default function ProductOverview(props) {
             <Rating value={rating} readOnly />
           </CardContent>
           <div className={classes.controls}>
-            <Button color="red" onClick={handleReviewClick}>
-              راجع الاَن
-            </Button>
+            <ReviewButton />
           </div>
         </div>
       </Card>

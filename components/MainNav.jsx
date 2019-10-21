@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 import { useRouter } from "next/router";
@@ -48,24 +48,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import firebaseAuth from "../firebase";
 
 import { useStateValue } from "../store";
-import { setUser, setDialog, setSnackbar } from "../actions";
-
-function ElevationScroll(props) {
-  const { children, window } = props;
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold: 0,
-    target: window ? window() : undefined
-  });
-
-  return React.cloneElement(children, {
-    elevation: trigger ? 4 : 0
-  });
-}
-
-ElevationScroll.propTypes = {
-  children: PropTypes.element.isRequired
-};
+import { setUser, setDialog, setSnackbar, setMenuAnchor } from "../actions";
 
 const drawerWidth = 240;
 
@@ -115,14 +98,13 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.enteringScreen
     })
   },
-  avatar: {
-    width: theme.spacing(3),
-    height: theme.spacing(3)
-  },
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
     whiteSpace: "nowrap"
+  },
+  drawerHeader: {
+    marginTop: theme.spacing(1)
   },
   swipableDrawer: {
     borderBottomLeftRadius: 0,
@@ -180,20 +162,117 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function MainNav(props) {
-  const router = useRouter();
-  const classes = useStyles();
-  const theme = useTheme();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [searchFocus, setSearchFocus] = React.useState(false);
+function ElevationScroll(props) {
+  const { children } = props;
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 0
+  });
 
-  const isMenuOpen = Boolean(anchorEl);
-  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
-  const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
+  return React.cloneElement(children, {
+    elevation: trigger ? 4 : 0
+  });
+}
 
-  const [{ user, dialog, snackbar }, dispatch] = useStateValue();
+ElevationScroll.propTypes = {
+  children: PropTypes.element.isRequired
+};
+
+function RootLevelDialogs() {
+  const [{ dialog }, dispatch] = useStateValue();
+
+  return useMemo(() => {
+    const handleDialogClose = () => {
+      dispatch(setDialog(null));
+    };
+
+    return (
+      <React.Fragment>
+        <Dialog
+          open={dialog === "sign-in"}
+          onClose={handleDialogClose}
+          aria-labelledby="sign-in-dialog"
+        >
+          <SignInDialog />
+        </Dialog>
+        <Dialog
+          open={dialog === "sign-up"}
+          onClose={handleDialogClose}
+          aria-labelledby="sign-up-dialog"
+        >
+          <SignUpDialog />
+        </Dialog>
+        <Dialog
+          open={dialog === "sign-up-prompt"}
+          onClose={handleDialogClose}
+          aria-labelledby="sign-up-prompt-dialog"
+        >
+          <SignUpPromptDialog />
+        </Dialog>
+        <Dialog
+          open={dialog === "review"}
+          onClose={handleDialogClose}
+          aria-labelledby="review-dialog"
+        >
+          <ReviewDialog />
+        </Dialog>
+      </React.Fragment>
+    );
+  }, [dispatch, dialog]);
+}
+
+function RootLevelSnackbar() {
+  const [{ snackbar }, dispatch] = useStateValue();
+
+  return useMemo(() => {
+    const handleSnackbarClose = (event, reason) => {
+      if (reason === "clickaway") {
+        return;
+      }
+      dispatch(setSnackbar(false));
+    };
+
+    const processQueue = () => {
+      if (snackbar.queue.length > 0) {
+        dispatch(setSnackbar(true, snackbar.queue.shift()));
+      }
+    };
+
+    const handleSnackbarExited = () => {
+      processQueue();
+    };
+
+    return (
+      <Snackbar
+        key={snackbar.messageInfo ? snackbar.messageInfo.key : undefined}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center"
+        }}
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        onExited={handleSnackbarExited}
+        ContentProps={{
+          "aria-describedby": "message-id"
+        }}
+      >
+        <SnackbarContentWrapper
+          onClose={handleSnackbarClose}
+          variant={
+            snackbar.messageInfo ? snackbar.messageInfo.variant : undefined
+          }
+          message={
+            snackbar.messageInfo ? snackbar.messageInfo.message : undefined
+          }
+        />
+      </Snackbar>
+    );
+  }, [dispatch, snackbar]);
+}
+
+function DrawerHeader() {
+  const [{ user }, dispatch] = useStateValue();
 
   useEffect(() => {
     const unregisterAuthObserver = firebaseAuth.onAuthStateChanged(user => {
@@ -222,19 +301,115 @@ export default function MainNav(props) {
     };
   }, [dispatch]);
 
-  const handleProfileMenuOpen = event => {
-    setAnchorEl(event.currentTarget);
-  };
+  return useMemo(() => {
+    return (
+      <React.Fragment>
+        <ListItemAvatar>
+          {user && user.photoURL ? (
+            <Avatar alt="user avatar" src={user.photoURL} />
+          ) : (
+            <AccountCircleTwoTone fontSize="large" />
+          )}
+        </ListItemAvatar>
+        <ListItemText
+          primary="مرحباً بك"
+          secondary={user && user.displayName ? user.displayName : "مجهول"}
+        />
+      </React.Fragment>
+    );
+  }, [user]);
+}
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+const accountMenuId = "primary-account-menu";
 
-  const handleAccountClick = () => {
-    if (!user) dispatch(setDialog("sign-in"));
-    else firebaseAuth.signOut();
-    setAnchorEl(null);
-  };
+function AccountMenu() {
+  const [
+    {
+      user,
+      menus: { account }
+    },
+    dispatch
+  ] = useStateValue();
+
+  const isMenuOpen = Boolean(account);
+
+  return useMemo(() => {
+    const handleMenuClose = () => {
+      dispatch(setMenuAnchor("account", null));
+    };
+
+    const handleAccountClick = () => {
+      if (!user) dispatch(setDialog("sign-in"));
+      else firebaseAuth.signOut();
+      handleMenuClose();
+    };
+
+    return (
+      <Menu
+        anchorEl={account}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        id={accountMenuId}
+        keepMounted
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
+        open={isMenuOpen}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleAccountClick}>
+          {!user ? "تسجيل الدخول" : "تسجيل الخروج"}
+        </MenuItem>
+      </Menu>
+    );
+  }, [dispatch, user, account, isMenuOpen]);
+}
+
+const useStyles1 = makeStyles(theme => ({
+  avatar: {
+    width: theme.spacing(3),
+    height: theme.spacing(3)
+  }
+}));
+
+function AccountMenuTrigger() {
+  const classes = useStyles1();
+  const [{ user }, dispatch] = useStateValue();
+
+  return useMemo(() => {
+    const handleMenuOpen = event => {
+      dispatch(setMenuAnchor("account", event.currentTarget));
+    };
+
+    return (
+      <IconButton
+        aria-label="account of current user"
+        aria-controls={accountMenuId}
+        aria-haspopup="true"
+        onClick={handleMenuOpen}
+        color="inherit"
+      >
+        {user && user.photoURL ? (
+          <Avatar
+            className={classes.avatar}
+            alt="user avatar"
+            src={user.photoURL}
+          />
+        ) : (
+          <AccountCircleTwoTone />
+        )}
+      </IconButton>
+    );
+  }, [dispatch, user, classes.avatar]);
+}
+
+export default function MainNav(props) {
+  const router = useRouter();
+  const classes = useStyles();
+  const theme = useTheme();
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [searchFocus, setSearchFocus] = React.useState(false);
+
+  const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
+  const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -268,85 +443,39 @@ export default function MainNav(props) {
     setSearchFocus(focused);
   };
 
-  const handleDialogClose = () => {
-    dispatch(setDialog(null));
-  };
-
   const handleProductSelected = suggestion => {
     const { brand, product } = suggestion;
     router.push("/reviews/[brand]/[product]", `/reviews/${brand}/${product}`);
   };
 
-  const processQueue = () => {
-    if (snackbar.queue.length > 0) {
-      dispatch(setSnackbar(true, snackbar.queue.shift()));
-    }
-  };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    dispatch(setSnackbar(false));
-  };
-
-  const handleSnackbarExited = () => {
-    processQueue();
-  };
-
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{ vertical: "top", horizontal: "right" }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleAccountClick}>
-        {!user ? "تسجيل الدخول" : "تسجيل الخروج"}
-      </MenuItem>
-    </Menu>
-  );
-
   const drawer = (
     <React.Fragment>
-      <List>
-        <ListItem alignItems="flex-start">
-          <ListItemAvatar>
-            {user && user.photoURL ? (
-              <Avatar alt="user avatar" src={user.photoURL} />
-            ) : (
-              <AccountCircleTwoTone fontSize="large" />
-            )}
-          </ListItemAvatar>
-          <ListItemText
-            primary="مرحباً بك"
-            secondary={user && user.displayName ? user.displayName : "مجهول"}
-          />
-          {(open || mobileOpen) && (
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                aria-label="close drawer"
-                onClick={handleDrawerOff}
-              >
-                {isDesktop ? (
-                  theme.direction === "rtl" ? (
-                    <KeyboardArrowRightRoundedIcon />
-                  ) : (
-                    <KeyboardArrowLeftRoundedIcon />
-                  )
+      <ListItem
+        className={classes.drawerHeader}
+        ContainerComponent="div"
+        alignItems="flex-start"
+      >
+        <DrawerHeader />
+        {(open || mobileOpen) && (
+          <ListItemSecondaryAction>
+            <IconButton
+              edge="end"
+              aria-label="close drawer"
+              onClick={handleDrawerOff}
+            >
+              {isDesktop ? (
+                theme.direction === "rtl" ? (
+                  <KeyboardArrowRightRoundedIcon />
                 ) : (
-                  <KeyboardArrowDownRoundedIcon />
-                )}
-              </IconButton>
-            </ListItemSecondaryAction>
-          )}
-        </ListItem>
-      </List>
+                  <KeyboardArrowLeftRoundedIcon />
+                )
+              ) : (
+                <KeyboardArrowDownRoundedIcon />
+              )}
+            </IconButton>
+          </ListItemSecondaryAction>
+        )}
+      </ListItem>
       <Divider variant="middle" />
       <List>
         <ListItem className={classes.listItem} button selected>
@@ -419,7 +548,7 @@ export default function MainNav(props) {
   return (
     <React.Fragment>
       <div className={clsx(classes.root, classes.grow)}>
-        <ElevationScroll {...props}>
+        <ElevationScroll>
           <AppBar
             position="fixed"
             className={clsx(classes.appBar, {
@@ -455,27 +584,11 @@ export default function MainNav(props) {
                 onBlur={handleSearchFocus(false)}
                 handleSuggestionSelected={handleProductSelected}
               />
-              <IconButton
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-              >
-                {user && user.photoURL ? (
-                  <Avatar
-                    className={classes.avatar}
-                    alt="user avatar"
-                    src={user.photoURL}
-                  />
-                ) : (
-                  <AccountCircleTwoTone />
-                )}
-              </IconButton>
+              <AccountMenuTrigger />
             </Toolbar>
           </AppBar>
         </ElevationScroll>
-        {renderMenu}
+        <AccountMenu />
         <nav aria-label="site pages">
           <Hidden smUp implementation="css">
             <SwipeableDrawer
@@ -527,58 +640,8 @@ export default function MainNav(props) {
           </footer>
         </div>
       </div>
-      <Dialog
-        open={dialog === "sign-in"}
-        onClose={handleDialogClose}
-        aria-labelledby="sign-in-dialog"
-      >
-        <SignInDialog />
-      </Dialog>
-      <Dialog
-        open={dialog === "sign-up"}
-        onClose={handleDialogClose}
-        aria-labelledby="sign-up-dialog"
-      >
-        <SignUpDialog />
-      </Dialog>
-      <Dialog
-        open={dialog === "sign-up-prompt"}
-        onClose={handleDialogClose}
-        aria-labelledby="sign-up-prompt-dialog"
-      >
-        <SignUpPromptDialog />
-      </Dialog>
-      <Dialog
-        open={dialog === "review"}
-        onClose={handleDialogClose}
-        aria-labelledby="review-dialog"
-      >
-        <ReviewDialog />
-      </Dialog>
-      <Snackbar
-        key={snackbar.messageInfo ? snackbar.messageInfo.key : undefined}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "center"
-        }}
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
-        onExited={handleSnackbarExited}
-        ContentProps={{
-          "aria-describedby": "message-id"
-        }}
-      >
-        <SnackbarContentWrapper
-          onClose={handleSnackbarClose}
-          variant={
-            snackbar.messageInfo ? snackbar.messageInfo.variant : undefined
-          }
-          message={
-            snackbar.messageInfo ? snackbar.messageInfo.message : undefined
-          }
-        />
-      </Snackbar>
+      <RootLevelDialogs />
+      <RootLevelSnackbar />
     </React.Fragment>
   );
 }
