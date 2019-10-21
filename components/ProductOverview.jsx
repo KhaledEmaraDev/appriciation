@@ -58,27 +58,27 @@ export default function ProductOverview(props) {
 
   return (
     <React.Fragment>
-      {imageExists && (
-        <Head>
-          <meta
-            property="og:image"
-            content={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${encodeURIComponent(
-              brand
-            )} ${encodeURIComponent(product)}.jpg`}
-          />
-        </Head>
-      )}
       <Card className={classes.card} elevation={25}>
         {imageExists && (
-          <CardMedia
-            component="img"
-            className={classes.cover}
-            image={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${encodeURIComponent(
-              brand
-            )} ${encodeURIComponent(product)}.jpg`}
-            loading="auto"
-            title={`${brand} ${product}`}
-          />
+          <React.Fragment>
+            <Head>
+              <meta
+                property="og:image"
+                content={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${encodeURIComponent(
+                  `${brand} ${product}`
+                )}.jpg`}
+              />
+            </Head>
+            <CardMedia
+              component="img"
+              className={classes.cover}
+              image={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${encodeURIComponent(
+                `${brand} ${product}`
+              )}.jpg`}
+              loading="auto"
+              title={`${brand} ${product}`}
+            />
+          </React.Fragment>
         )}
         <div className={classes.details}>
           <CardContent className={classes.content}>

@@ -65,7 +65,7 @@ export default function ReviewDialog(props) {
     if (!product) return;
     dispatch(fillForm("review", "brand", brand));
     dispatch(fillForm("review", "product", product));
-  }, [brand, product]);
+  }, [dispatch, brand, product]);
 
   useEffect(() => {
     if (!review.product || review.ratings_buckets) return;
@@ -76,18 +76,18 @@ export default function ReviewDialog(props) {
       )}&product=${encodeURIComponent(review.product)}`
     )
       .then(res => res.json())
-      .then(json => {
+      .then(result => {
         dispatch(
           fillForm(
             "review",
             "min_date",
-            json.specs ? json.specs.publish_date : null
+            result.specs ? result.specs.publish_date : null
           )
         );
-        dispatch(fillForm("review", "ratings_buckets", json.ratings_buckets));
+        dispatch(fillForm("review", "ratings_buckets", result.ratings_buckets));
         setLoading(false);
       });
-  }, [review.brand, review.product]);
+  }, [dispatch, review.brand, review.product, review.ratings_buckets]);
 
   function handleProductSelected(suggestion) {
     dispatch(fillForm("review", "brand", suggestion.brand));

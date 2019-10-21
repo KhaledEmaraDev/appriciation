@@ -83,8 +83,8 @@ export default function Carousel(props) {
             {Math.abs(activeStep - index) <= 2 ? (
               <Link
                 className={classes.img}
-                href="/reviews/[brand]/[product]"
-                as={`/reviews/${encodeURIComponent(
+                href="/review/[brand]/[product]"
+                as={`/review/${encodeURIComponent(
                   step.brand
                 )}/${encodeURIComponent(step.product)}`}
               >
@@ -92,8 +92,8 @@ export default function Carousel(props) {
                   loading="auto"
                   className={classes.img}
                   src={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${encodeURIComponent(
-                    step.brand
-                  )} ${encodeURIComponent(step.product)}.jpg`}
+                    `${step.brand} ${step.product}`
+                  )}.jpg`}
                   alt={`${step.brand} ${step.product}`}
                 />
               </Link>
@@ -104,8 +104,8 @@ export default function Carousel(props) {
       <div className={classes.containerBackground}>
         <Link
           className={classes.link}
-          href="/reviews/[brand]/[product]"
-          as={`/reviews/${encodeURIComponent(
+          href="/review/[brand]/[product]"
+          as={`/review/${encodeURIComponent(
             props.slides[activeStep].brand
           )}/${encodeURIComponent(props.slides[activeStep].product)}`}
         >

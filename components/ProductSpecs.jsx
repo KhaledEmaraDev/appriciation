@@ -308,8 +308,8 @@ export default function ProductSpecs(props) {
                   loading="auto"
                   className={classes.thumbnail}
                   src={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${encodeURIComponent(
-                    brand
-                  )} ${product}.jpg`}
+                    `${brand} ${product}`
+                  )}.jpg`}
                   alt={`${brand} ${product}`}
                 />
               </TableCell>
@@ -318,8 +318,8 @@ export default function ProductSpecs(props) {
                   loading="auto"
                   className={classes.thumbnail}
                   src={`https://d3tygoy974vfbk.cloudfront.net/images/phones/${encodeURIComponent(
-                    comparedBrand
-                  )} ${encodeURIComponent(comparedProduct)}.jpg`}
+                    `${comparedBrand} ${comparedProduct}`
+                  )}.jpg`}
                   alt={`${comparedBrand} ${comparedProduct}`}
                 />
               </TableCell>

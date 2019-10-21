@@ -445,7 +445,10 @@ export default function MainNav(props) {
 
   const handleProductSelected = suggestion => {
     const { brand, product } = suggestion;
-    router.push("/reviews/[brand]/[product]", `/reviews/${brand}/${product}`);
+    router.push(
+      "/review/[brand]/[product]",
+      `/review/${encodeURIComponent(brand)}/${encodeURIComponent(product)}`
+    );
   };
 
   const drawer = (
