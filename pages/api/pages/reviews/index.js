@@ -1,4 +1,9 @@
+import Cors from "micro-cors";
 import withDatabase from "../../../../middlewares/withDatabase";
+
+const cors = Cors({
+  allowedMethods: ["HEAD", "OPTIONS", "GET"]
+});
 
 const handler = (req, res) => {
   const {
@@ -73,10 +78,14 @@ const handler = (req, res) => {
         });
       break;
     }
+    case "HEAD":
+    case "OPTIONS":
+      res.send(res, 200, "ok!");
+      break;
     default:
-      res.setHeader("Allow", ["GET"]);
+      res.setHeader("Allow", ["HEAD", "OPTIONS", "GET"]);
       res.status(405).end(`Method ${method} Not Allowed`);
   }
 };
 
-export default withDatabase(handler);
+export default cors(withDatabase(handler));
