@@ -54,8 +54,18 @@ export default function ProductSpecs(props) {
 
   function handleSearchClick(suggestion) {
     router.push(
-      `/comparison?brand=${brand}&product=${product}&comparedBrand=${suggestion.brand}&comparedProduct=${suggestion.product}`,
-      `/comparison/${brand}/${product}/${suggestion.brand}/${suggestion.product}`
+      `/comparison?brand=${encodeURIComponent(
+        brand
+      )}&product=${encodeURIComponent(
+        product
+      )}&comparedBrand=${encodeURIComponent(
+        suggestion.brand
+      )}&comparedProduct=${encodeURIComponent(suggestion.product)}`,
+      `/comparison/${encodeURIComponent(brand)}/${encodeURIComponent(
+        product
+      )}/${encodeURIComponent(suggestion.brand)}/${encodeURIComponent(
+        suggestion.product
+      )}`
     );
   }
 

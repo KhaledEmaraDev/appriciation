@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import CallToAction from "../components/CallToAction";
 import Carousel from "../components/Carousel";
@@ -7,6 +7,9 @@ import ProductReviews from "../components/ProductReviews";
 
 import { useStateValue } from "../store";
 import { fillForm, setDialog } from "../actions";
+
+import cachedFetch, { overrideCache } from "../lib/cached-json-fetch";
+const DATA_URL = "http://localhost:3000/api/review/most_recent";
 
 const upcomingSlides = [
   {
@@ -76,7 +79,13 @@ function MainCallToAction() {
 }
 
 export default function Index(props) {
-  const { reviews } = props;
+  const { isServerRendered, reviews } = props;
+
+  useEffect(() => {
+    if (isServerRendered) {
+      overrideCache(DATA_URL, { reviews });
+    }
+  }, [isServerRendered, reviews]);
 
   return (
     <Grid container spacing={2}>
@@ -96,14 +105,15 @@ export default function Index(props) {
   );
 }
 
-Index.getInitialProps = async () => {
-  const res = await fetch(`http://localhost:3000/api/review/most_recent`);
-  const result = await res.json();
+Index.getInitialProps = async ({ req }) => {
+  const result = await cachedFetch(DATA_URL);
   return {
+    isServerRendered: !!req,
     reviews: result.reviews
   };
 };
 
 Index.propTypes = {
+  isServerRendered: PropTypes.bool,
   reviews: PropTypes.array
 };

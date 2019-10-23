@@ -1,11 +1,11 @@
 import React from "react";
-import PropTypes from "prop-types";
 import clsx from "clsx";
-import { useRouter } from "next/router";
-import NextLink from "next/link";
+import PropTypes from "prop-types";
 import MuiLink from "@material-ui/core/Link";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
 
-const NextComposed = React.forwardRef((props, ref) => {
+const NextComposed = React.forwardRef(function NextComposed(props, ref) {
   const { as, href, prefetch, ...other } = props;
 
   return (
@@ -14,8 +14,6 @@ const NextComposed = React.forwardRef((props, ref) => {
     </NextLink>
   );
 });
-
-NextComposed.displayName = "NextComposed";
 
 NextComposed.propTypes = {
   as: PropTypes.string,

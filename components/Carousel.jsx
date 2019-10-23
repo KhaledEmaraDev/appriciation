@@ -87,8 +87,12 @@ export default function Carousel(props) {
                 className={classes.img}
                 component={Link}
                 naked
-                href={`/reviews?brand=${step.brand}&product=${step.product}`}
-                as={`/reviews/${step.brand}/${step.product}`}
+                href={`/reviews?brand=${encodeURIComponent(
+                  step.brand
+                )}&product=${encodeURIComponent(step.product)}`}
+                as={`/reviews/${encodeURIComponent(
+                  step.brand
+                )}/${encodeURIComponent(step.product)}`}
               >
                 <img
                   loading="auto"
@@ -106,8 +110,12 @@ export default function Carousel(props) {
       <div className={classes.containerBackground}>
         <Link
           className={classes.link}
-          href={`/reviews?brand=${props.slides[activeStep].brand}&product=${props.slides[activeStep].product}`}
-          as={`/reviews/${props.slides[activeStep].brand}/${props.slides[activeStep].product}`}
+          href={`/reviews?brand=${encodeURIComponent(
+            props.slides[activeStep].brand
+          )}&product=${encodeURIComponent(props.slides[activeStep].product)}`}
+          as={`/reviews/${encodeURIComponent(
+            props.slides[activeStep].brand
+          )}/${encodeURIComponent(props.slides[activeStep].product)}`}
         >
           <Typography
             className={classes.title}

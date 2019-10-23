@@ -23,6 +23,8 @@ import { makeStyles, withStyles } from "@material-ui/styles";
 import { useStateValue } from "../../store";
 import { fillForm, setDialog, showSnackbar } from "../../actions";
 
+import * as gtag from "../../lib/gtag";
+
 const QontoConnector = withStyles(theme => ({
   alternativeLabel: {
     top: 10,
@@ -251,6 +253,12 @@ export default function ReviewDialog() {
     }
 
     if (!user) return dispatch(setDialog("sign-up-prompt"));
+
+    gtag.event({
+      action: "submit_form",
+      category: "review",
+      label: `${brand} ${product}`
+    });
 
     fetch("/api/review", {
       method: "POST",

@@ -9,6 +9,8 @@ import { makeStyles } from "@material-ui/styles";
 import { useStateValue } from "../../store";
 import { setDialog, showSnackbar } from "../../actions";
 
+import * as gtag from "../../lib/gtag";
+
 const useStyles = makeStyles(theme => ({
   paper: {
     margin: theme.spacing(2, 0, 2, 0),
@@ -51,6 +53,12 @@ export default function SignUpPromptDialog() {
       brand_pros,
       brand_cons
     } = review;
+
+    gtag.event({
+      action: "submit_form",
+      category: "review",
+      label: `${brand} ${product}`
+    });
 
     fetch("/api/review", {
       method: "POST",

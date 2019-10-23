@@ -25,10 +25,15 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { StateProvider } from "../store";
 import { reducer, initialState } from "../reducer";
 
+import * as gtag from "../lib/gtag";
+
 Router.events.on("routeChangeStart", () => {
   NProgress.start();
 });
-Router.events.on("routeChangeComplete", () => NProgress.done());
+Router.events.on("routeChangeComplete", url => {
+  gtag.pageview(url);
+  NProgress.done();
+});
 Router.events.on("routeChangeError", () => NProgress.done());
 
 const jss = create({ plugins: [...jssPreset().plugins, rtl()] });

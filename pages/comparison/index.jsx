@@ -32,7 +32,13 @@ export default function ComparedReviews(props) {
 ComparedReviews.getInitialProps = async ({ query }) => {
   const { brand, product, comparedBrand, comparedProduct } = query;
   const res = await fetch(
-    `http://localhost:3000/api/pages/comparison?brand=${brand}&product=${product}&comparedBrand=${comparedBrand}&comparedProduct=${comparedProduct}`
+    `http://localhost:3000/api/pages/comparison?brand=${encodeURIComponent(
+      brand
+    )}&product=${encodeURIComponent(
+      product
+    )}&comparedBrand=${encodeURIComponent(
+      comparedBrand
+    )}&comparedProduct=${encodeURIComponent(comparedProduct)}`
   );
   const result = await res.json();
   return {
