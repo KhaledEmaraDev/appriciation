@@ -1,4 +1,4 @@
-import withDatabase from "../../../../../../middlewares/withDatabase";
+import withDatabase from "../../../../middlewares/withDatabase";
 
 const handler = (req, res) => {
   const {
@@ -17,38 +17,26 @@ const handler = (req, res) => {
         .collection("reviews")
         .aggregate([
           {
-            $match: {
-              brand,
-              product
-            }
+            $match: { brand, product, approved: true }
           },
-          { $project: { _id: false, ratings: true } },
-          { $unwind: { path: "$ratings", includeArrayIndex: "index" } },
+          {
+            $project: { _id: false, ratings: { $objectToArray: "$ratings" } }
+          },
+          { $unwind: { path: "$ratings" } },
           {
             $group: {
-              _id: "$index",
-              avg_rating: { $avg: "$ratings" }
+              _id: "$ratings.k",
+              avg_rating: { $avg: "$ratings.v" }
             }
-          },
-          { $sort: { _id: 1 } },
-          {
-            $group: {
-              _id: null,
-              rating: { $avg: "$avg_rating" },
-              ratings: { $push: "$avg_rating" }
-            }
-          },
-          {
-            $project: { _id: false }
           }
         ])
-        .next();
+        .toArray();
 
       const reviewsPromise = db
         .collection("reviews")
         .aggregate([
           {
-            $match: { brand, product }
+            $match: { brand, product, approved: true }
           },
           {
             $lookup: {
@@ -74,10 +62,8 @@ const handler = (req, res) => {
         .then(results =>
           res.json({
             status: true,
-            specs: results[0].specs,
-            ratings_buckets: results[0].ratings_buckets,
-            rating: results[1] ? results[1].rating : null,
-            ratings: results[1] ? results[1].ratings : null,
+            specs: results[0] && results[0].specs,
+            ratings: results[1],
             reviews: results[2]
           })
         )

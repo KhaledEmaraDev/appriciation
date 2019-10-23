@@ -22,17 +22,6 @@ import { makeStyles } from "@material-ui/styles";
 import { formatDistance, formatDistanceStrict } from "date-fns";
 import arLocale from "date-fns/locale/ar-SA";
 
-const categories = {
-  phone: [
-    "جودة التصنيع",
-    "واجهة المستخدم",
-    "القيمة للسعر",
-    "الكاميرا",
-    "جودة المكالمات",
-    "البطارية"
-  ]
-};
-
 const useStyles = makeStyles(theme => ({
   block: { display: "block" },
   iconAvatar: {
@@ -73,6 +62,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+function ReviewRatings(props) {
+  return Object.entries(props.ratings).map(([key, value]) => {
+    return (
+      <React.Fragment key={key}>
+        <Grid item xs={6} sm={3}>
+          <Typography variant="subtitle2">{key}:</Typography>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Rating value={value} readOnly />
+        </Grid>
+      </React.Fragment>
+    );
+  });
+}
+
 function Review(props) {
   const classes = useStyles(props);
   const [expanded, setExpanded] = React.useState(false);
@@ -108,8 +112,8 @@ function Review(props) {
                   className={classes.rating}
                   size="small"
                   value={Math.round(
-                    review.ratings.reduce((a, b) => a + b) /
-                      review.ratings.length
+                    Object.values(review.ratings).reduce((a, b) => a + b) /
+                      Object.values(review.ratings).length
                   )}
                   readOnly
                 />
@@ -157,18 +161,7 @@ function Review(props) {
           {review.ratings && (
             <Collapse in={expanded}>
               <Grid container>
-                {review.ratings.map((rating, index) => (
-                  <React.Fragment key={categories.phone[index]}>
-                    <Grid item xs={6} sm={3}>
-                      <Typography variant="subtitle2">
-                        {categories.phone[index]}:
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6} sm={3}>
-                      <Rating value={rating} readOnly />
-                    </Grid>
-                  </React.Fragment>
-                ))}
+                <ReviewRatings ratings={review.ratings} />
               </Grid>
               <br />
             </Collapse>
@@ -186,10 +179,8 @@ function Review(props) {
               <Link
                 className={classes.productLink}
                 color="inherit"
-                href="/review/[brand]/[product]"
-                as={`/review/${encodeURIComponent(
-                  review.brand
-                )}/${encodeURIComponent(review.product)}`}
+                href={`/reviews?brand=${review.brand}&product=${review.product}`}
+                as={`/reviews/${review.brand}/${review.product}`}
               >
                 {`${review.brand} ${review.product}`}
               </Link>
@@ -212,10 +203,8 @@ function Review(props) {
               <Link
                 className={classes.productLink}
                 color="inherit"
-                href="/review/[brand]/[product]"
-                as={`/review/${encodeURIComponent(
-                  review.brand
-                )}/${encodeURIComponent(review.product)}`}
+                href={`/reviews?brand=${review.brand}&product=${review.product}`}
+                as={`/reviews/${review.brand}/${review.product}`}
               >
                 {`${review.brand} ${review.product}`}
               </Link>
@@ -231,8 +220,8 @@ function Review(props) {
 }
 
 Review.propTypes = {
-  brand: PropTypes.string.isRequired,
-  product: PropTypes.string.isRequired,
+  brand: PropTypes.string,
+  product: PropTypes.string,
   review: PropTypes.object.isRequired
 };
 
@@ -261,7 +250,7 @@ export default function ProductReviews(props) {
 
 ProductReviews.propTypes = {
   title: PropTypes.string,
-  brand: PropTypes.string.isRequired,
-  product: PropTypes.string.isRequired,
+  brand: PropTypes.string,
+  product: PropTypes.string,
   reviews: PropTypes.array
 };

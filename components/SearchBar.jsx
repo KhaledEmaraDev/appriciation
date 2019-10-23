@@ -45,9 +45,9 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   return (
     <MenuItem selected={isHighlighted} component="div">
       <div>
-        {parts.map(part => (
+        {parts.map((part, index) => (
           <span
-            key={part.text}
+            key={part.text + index}
             style={{ fontWeight: part.highlight ? 500 : 400 }}
           >
             {part.text}
@@ -71,7 +71,7 @@ const useStyles = makeStyles(theme => ({
     },
     "&:focus-within": {
       backgroundColor: theme.palette.background.default,
-      border: `1px solid ${theme.palette.divider}`
+      boxShadow: `0 0 0 1px ${theme.palette.divider}`
     }
   },
   inputAdornment: {
@@ -110,11 +110,7 @@ export default function SearchBar(props) {
   const handleSuggestionsFetchRequested = ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
     if (inputValue.length === 0) return setSuggestions([]);
-    fetch(
-      `http://localhost:3000/api/search/products?query=${encodeURIComponent(
-        inputValue
-      )}`
-    )
+    fetch(`/api/search/products?query=${encodeURIComponent(inputValue)}`)
       .then(res => res.json())
       .then(result => setSuggestions(result.products));
   };

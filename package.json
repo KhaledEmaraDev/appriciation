@@ -8,7 +8,7 @@
   "license": "MPL-2.0",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "NODE_ENV=development node server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "analyze": "BUNDLE_ANALYZE=both next build",
@@ -26,6 +26,7 @@
     "@types/mongodb": "^3.3.6",
     "@zeit/next-bundle-analyzer": "^0.1.2",
     "autosuggest-highlight": "^3.1.1",
+    "cacheable-response": "^1.7.4",
     "clsx": "^1.0.4",
     "date-fns": "^2.5.1",
     "eslint-plugin-react-hooks": "^2.1.2",

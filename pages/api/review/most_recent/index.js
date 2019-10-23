@@ -8,7 +8,7 @@ const handler = (req, res) => {
       db.collection("reviews")
         .aggregate([
           {
-            $match: { user: { $exists: true, $ne: null } }
+            $match: { approved: true, user: { $exists: true } }
           },
           { $sort: { date_rev: -1 } },
           { $limit: 5 },

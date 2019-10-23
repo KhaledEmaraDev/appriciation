@@ -1,4 +1,4 @@
-import withDatabase from "../../../../../../../../../middlewares/withDatabase";
+import withDatabase from "../../../../middlewares/withDatabase";
 
 const handler = (req, res) => {
   const {
@@ -21,8 +21,8 @@ const handler = (req, res) => {
         .then(results =>
           res.json({
             status: true,
-            specs: results[0].specs,
-            comparedSpecs: results[1].specs
+            specs: results[0] && results[0].specs,
+            comparedSpecs: results[1] && results[1].specs
           })
         )
         .catch(error => {

@@ -34,19 +34,18 @@ export default function ProductRating(props) {
         variant="subtitle2"
       >{`تقييمات هاتف ${brand} ${product}`}</Typography>
       <Grid container spacing={1}>
-        {ratings &&
-          ratings.map(rating => (
-            <React.Fragment key={rating.category}>
-              <Grid item xs={6} sm={3}>
-                <Typography variant="subtitle2" align="center">
-                  {rating.category}:
-                </Typography>
-              </Grid>
-              <Grid className={classes.center} item xs={6} sm={3}>
-                <Rating value={rating.value} readOnly />
-              </Grid>
-            </React.Fragment>
-          ))}
+        {ratings.map(rating => (
+          <React.Fragment key={rating._id}>
+            <Grid item xs={6} sm={3}>
+              <Typography variant="subtitle2" align="center">
+                {rating._id}:
+              </Typography>
+            </Grid>
+            <Grid className={classes.center} item xs={6} sm={3}>
+              <Rating value={rating.avg_rating} readOnly />
+            </Grid>
+          </React.Fragment>
+        ))}
       </Grid>
     </Paper>
   );

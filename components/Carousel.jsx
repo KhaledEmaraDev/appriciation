@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import ButtonBase from "@material-ui/core/ButtonBase";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
@@ -25,17 +26,18 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(1.25, 1.75)
   },
   img: {
+    borderRadius: theme.shape.borderRadius,
     width: "100%",
     overflow: "hidden"
   },
   containerBackground: {
     position: "absolute",
+    borderRadius: theme.shape.borderRadius,
     background: "rgba(0, 0, 0, 0.5)",
     width: "100%",
     bottom: 0
   },
   link: {
-    zIndex: theme.zIndex.mobileStepper,
     color: "white",
     textDecoration: "underline"
   },
@@ -81,12 +83,12 @@ export default function Carousel(props) {
         {props.slides.map((step, index) => (
           <div key={`${step.brand} ${step.product}`}>
             {Math.abs(activeStep - index) <= 2 ? (
-              <Link
+              <ButtonBase
                 className={classes.img}
-                href="/review/[brand]/[product]"
-                as={`/review/${encodeURIComponent(
-                  step.brand
-                )}/${encodeURIComponent(step.product)}`}
+                component={Link}
+                naked
+                href={`/reviews?brand=${step.brand}&product=${step.product}`}
+                as={`/reviews/${step.brand}/${step.product}`}
               >
                 <img
                   loading="auto"
@@ -96,7 +98,7 @@ export default function Carousel(props) {
                   )}.jpg`}
                   alt={`${step.brand} ${step.product}`}
                 />
-              </Link>
+              </ButtonBase>
             ) : null}
           </div>
         ))}
@@ -104,10 +106,8 @@ export default function Carousel(props) {
       <div className={classes.containerBackground}>
         <Link
           className={classes.link}
-          href="/review/[brand]/[product]"
-          as={`/review/${encodeURIComponent(
-            props.slides[activeStep].brand
-          )}/${encodeURIComponent(props.slides[activeStep].product)}`}
+          href={`/reviews?brand=${props.slides[activeStep].brand}&product=${props.slides[activeStep].product}`}
+          as={`/reviews/${props.slides[activeStep].brand}/${props.slides[activeStep].product}`}
         >
           <Typography
             className={classes.title}

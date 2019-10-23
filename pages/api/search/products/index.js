@@ -1,4 +1,4 @@
-import withDatabase from "../../../..middlewares/withDatabase";
+import withDatabase from "../../../../middlewares/withDatabase";
 
 const handler = (req, res) => {
   const {

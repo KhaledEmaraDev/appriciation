@@ -6,7 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import ProductReviews from "../components/ProductReviews";
 
 import { useStateValue } from "../store";
-import { setDialog } from "../actions";
+import { fillForm, setDialog } from "../actions";
 
 const upcomingSlides = [
   {
@@ -51,6 +51,8 @@ function MainCallToAction() {
 
   return useMemo(() => {
     function handleReviewClick() {
+      dispatch(fillForm("review", "brand", null));
+      dispatch(fillForm("review", "product", null));
       dispatch(setDialog("review"));
     }
 

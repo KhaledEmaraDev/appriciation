@@ -25,8 +25,7 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { StateProvider } from "../store";
 import { reducer, initialState } from "../reducer";
 
-Router.events.on("routeChangeStart", url => {
-  console.log(`Loading: ${url}`);
+Router.events.on("routeChangeStart", () => {
   NProgress.start();
 });
 Router.events.on("routeChangeComplete", () => NProgress.done());

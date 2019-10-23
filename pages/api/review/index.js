@@ -7,7 +7,11 @@ const handler = (req, res) => {
     case "POST": {
       if (!body) return res.sendStatus(400);
 
-      const review = { ...body.review, date_rev: new Date() };
+      const review = {
+        ...body.review,
+        date_buy: new Date(body.review.date_buy),
+        date_rev: new Date()
+      };
       if (session.decodedToken) review.user = session.decodedToken.uid;
 
       db.collection("reviews")
@@ -26,4 +30,3 @@ const handler = (req, res) => {
 };
 
 export default withDatabase(handler);
-

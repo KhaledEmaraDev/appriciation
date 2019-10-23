@@ -5,7 +5,7 @@ const password = encodeURIComponent(process.env.DB_PASSWORD);
 const authMechanism = "SCRAM-SHA-1";
 const dbName = "urrevs";
 
-const url = `mongodb://${user}:${password}@urrevs.com:27017/?authMechanism=${authMechanism}&authSource=${dbName}`;
+const url = `mongodb://${user}:${password}@${process.env.HOST}:27017/?authMechanism=${authMechanism}&authSource=${dbName}`;
 
 const client = new MongoClient(url, {
   useNewUrlParser: true,

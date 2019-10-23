@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/styles";
 
 import { useStateValue } from "../store";
-import { setDialog } from "../actions";
+import { fillForm, setDialog } from "../actions";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -35,12 +35,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function ReviewButton() {
+function ReviewButton(props) {
+  const { brand, product } = props;
+
   // eslint-disable-next-line no-empty-pattern
   const [{}, dispatch] = useStateValue();
 
   return useMemo(() => {
     function handleReviewClick() {
+      dispatch(fillForm("review", "brand", brand));
+      dispatch(fillForm("review", "product", product));
       dispatch(setDialog("review"));
     }
 
@@ -49,7 +53,7 @@ function ReviewButton() {
         راجع الاَن
       </Button>
     );
-  }, [dispatch]);
+  }, [dispatch, brand, product]);
 }
 
 export default function ProductOverview(props) {
@@ -88,7 +92,7 @@ export default function ProductOverview(props) {
             <Rating value={rating} readOnly />
           </CardContent>
           <div className={classes.controls}>
-            <ReviewButton />
+            <ReviewButton brand={brand} product={product} />
           </div>
         </div>
       </Card>

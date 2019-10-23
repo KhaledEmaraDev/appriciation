@@ -75,7 +75,6 @@ export default function SignUpPromptDialog() {
         return res.json();
       })
       .then(result => {
-        console.log(result);
         dispatch(setDialog(null));
         dispatch(showSnackbar("success", result.message));
       })

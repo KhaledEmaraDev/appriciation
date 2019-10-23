@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { useRouter } from "next/router";
 import Paper from "@material-ui/core/Paper";
+import SearchBar from "./SearchBar";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -28,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function ProductSpecs(props) {
+  const router = useRouter();
   const classes = useStyles();
   const {
     brand,
@@ -48,6 +51,13 @@ export default function ProductSpecs(props) {
         </Typography>
       </Paper>
     );
+
+  function handleSearchClick(suggestion) {
+    router.push(
+      `/comparison?brand=${brand}&product=${product}&comparedBrand=${suggestion.brand}&comparedProduct=${suggestion.product}`,
+      `/comparison/${brand}/${product}/${suggestion.brand}/${suggestion.product}`
+    );
+  }
 
   function createData(name, value) {
     return { name, value };
@@ -287,6 +297,11 @@ export default function ProductSpecs(props) {
             }`
           : `مقارنة ما بين هاتفي ${brand} ${product} و ${comparedBrand} ${comparedProduct}`}
       </Typography>
+      <SearchBar
+        id="compare-product-search"
+        placeholder="قارن مع منتج أخر"
+        handleSuggestionSelected={handleSearchClick}
+      />
       <Table>
         <TableHead>
           <TableRow>

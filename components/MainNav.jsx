@@ -82,6 +82,9 @@ const useStyles = makeStyles(theme => ({
   hide: {
     display: "none"
   },
+  logoWrapper: {
+    display: "flex" // contents is buggy with some major browsers
+  },
   logo: {
     width: theme.spacing(7),
     margin: theme.spacing(0, 2, 0, 0),
@@ -446,8 +449,8 @@ export default function MainNav(props) {
   const handleProductSelected = suggestion => {
     const { brand, product } = suggestion;
     router.push(
-      "/review/[brand]/[product]",
-      `/review/${encodeURIComponent(brand)}/${encodeURIComponent(product)}`
+      `/reviews?brand=${brand}&product=${product}`,
+      `/reviews/${brand}/${product}`
     );
   };
 
@@ -571,7 +574,7 @@ export default function MainNav(props) {
               >
                 <MenuIcon />
               </IconButton>
-              <Link href="/">
+              <Link className={classes.logoWrapper} href="/">
                 <img
                   className={clsx(classes.logo, {
                     [classes.logoHide]: searchFocus

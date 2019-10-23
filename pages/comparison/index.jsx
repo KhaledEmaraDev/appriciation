@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
-import ProductSpecs from "../../../../../../../components/ProductSpecs";
+import ProductSpecs from "../../components/ProductSpecs";
 
 export default function ComparedReviews(props) {
   const {
@@ -32,11 +32,7 @@ export default function ComparedReviews(props) {
 ComparedReviews.getInitialProps = async ({ query }) => {
   const { brand, product, comparedBrand, comparedProduct } = query;
   const res = await fetch(
-    `http://localhost:3000/api/pages/review/${encodeURIComponent(
-      brand
-    )}/${encodeURIComponent(product)}/compare/${encodeURIComponent(
-      comparedBrand
-    )}/${encodeURIComponent(comparedProduct)}`
+    `http://localhost:3000/api/pages/comparison?brand=${brand}&product=${product}&comparedBrand=${comparedBrand}&comparedProduct=${comparedProduct}`
   );
   const result = await res.json();
   return {
