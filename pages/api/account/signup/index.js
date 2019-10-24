@@ -41,4 +41,4 @@ const handler = (req, res) => {
   }
 };
 
-export default withDatabase(handler);
+export default cors(withDatabase(handler));

@@ -10,6 +10,10 @@ const handler = (req, res) => {
   switch (method) {
     case "POST": {
       req.session.decodedToken = null;
+      res.clearCookie("token", {
+        domain: ".urrevs.com",
+        httpOnly: true
+      });
       res.json({ status: true });
       break;
     }
@@ -23,4 +27,4 @@ const handler = (req, res) => {
   }
 };
 
-export default handler;
+export default cors(handler);

@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import Cors from "micro-cors";
 import withFirebase from "../../../../middlewares/withFirebase";
 
@@ -19,9 +20,31 @@ const handler = (req, res) => {
         .verifyIdToken(token)
         .then(decodedToken => {
           req.session.decodedToken = decodedToken;
-          return decodedToken;
+          const newToken = {
+            id: decodedToken.uid
+          };
+          if (decodedToken.name) newToken.name = decodedToken.name;
+          else newToken.username = decodedToken.email;
+          if (decodedToken.picture) newToken.picture = decodedToken.picture;
+          jwt.sign(
+            newToken,
+            process.env.SESSION_SECRET,
+            // { algorithm: "RS256" },
+            (error, token) => {
+              if (error) {
+                console.log(error);
+                return res.json({ error });
+              }
+              res.cookie("token", token, {
+                domain: ".urrevs.com",
+                httpOnly: true,
+                maxgAge: 7 * 24 * 60 * 60 * 1000
+              });
+              res.json({ status: true, decodedToken });
+            },
+            { expiresIn: 2 * 7 * 24 * 60 * 60 }
+          );
         })
-        .then(decodedToken => res.json({ status: true, decodedToken }))
         .catch(error => {
           console.log(error);
           res.json({ error });
@@ -38,4 +61,4 @@ const handler = (req, res) => {
   }
 };
 
-export default withFirebase(handler);
+export default cors(withFirebase(handler));
