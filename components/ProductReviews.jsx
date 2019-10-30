@@ -245,10 +245,12 @@ export default function ProductReviews(props) {
           </ListSubheader>
         }
       >
-        {reviews.map(review => (
+        {reviews.map((review, index) => (
           <React.Fragment key={review._id}>
             <Review brand={brand} product={product} review={review} />
-            <Divider variant="inset" component="li" />
+            {index !== reviews.length - 1 && (
+              <Divider variant="inset" component="li" />
+            )}
           </React.Fragment>
         ))}
       </List>

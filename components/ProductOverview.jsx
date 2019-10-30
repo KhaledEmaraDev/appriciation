@@ -45,6 +45,8 @@ function ReviewButton(props) {
     function handleReviewClick() {
       dispatch(fillForm("review", "brand", brand));
       dispatch(fillForm("review", "product", product));
+      dispatch(fillForm("review", "ratings_buckets", null));
+      dispatch(fillForm("review", "min_date", null));
       dispatch(setDialog("review"));
     }
 
@@ -53,7 +55,7 @@ function ReviewButton(props) {
         راجع الاَن
       </Button>
     );
-  }, [dispatch, brand, product]);
+  }, [brand, dispatch, product]);
 }
 
 export default function ProductOverview(props) {

@@ -48,7 +48,13 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import firebaseAuth from "../firebase";
 
 import { useStateValue } from "../store";
-import { setUser, setDialog, setSnackbar, setMenuAnchor } from "../actions";
+import {
+  setUser,
+  setDialog,
+  setSnackbar,
+  setMenuAnchor,
+  showSnackbar
+} from "../actions";
 
 const drawerWidth = 240;
 
@@ -211,13 +217,6 @@ function RootLevelDialogs() {
           aria-labelledby="sign-up-prompt-dialog"
         >
           <SignUpPromptDialog />
-        </Dialog>
-        <Dialog
-          open={dialog === "review"}
-          onClose={handleDialogClose}
-          aria-labelledby="review-dialog"
-        >
-          <ReviewDialog />
         </Dialog>
       </React.Fragment>
     );
@@ -403,6 +402,48 @@ function AccountMenuTrigger() {
   }, [dispatch, user, classes.avatar]);
 }
 
+function BeforeUnloadEventListener() {
+  const [
+    {
+      dialog,
+      forms: { review }
+    },
+    dispatch
+  ] = useStateValue();
+
+  useEffect(() => {
+    const onUnload = e => {
+      e.preventDefault();
+      return (e.returnValue = "");
+    };
+
+    if (review.pros || review.cons || review.brand_pros || review.brand_cons)
+      window.addEventListener("beforeunload", onUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", onUnload);
+    };
+  }, [dispatch, review]);
+
+  const handleReviewDialogClose = () => {
+    dispatch(setDialog(null));
+    if (review.pros || review.cons || review.brand_pros || review.brand_cons)
+      dispatch(
+        showSnackbar("info", "تم حفظ المراجعة. بإمكانك الاستكمال لاحقاً.")
+      );
+  };
+
+  return (
+    <Dialog
+      open={dialog === "review"}
+      onClose={handleReviewDialogClose}
+      aria-labelledby="review-dialog"
+    >
+      <ReviewDialog />
+    </Dialog>
+  );
+}
+
 export default function MainNav(props) {
   const router = useRouter();
   const classes = useStyles();
@@ -486,25 +527,51 @@ export default function MainNav(props) {
       </ListItem>
       <Divider variant="middle" />
       <List>
-        <ListItem className={classes.listItem} button selected>
+        <ListItem
+          className={classes.listItem}
+          button
+          onClick={() => {
+            router.push("/");
+          }}
+          selected
+        >
           <ListItemIcon>
             <HomeIcon />
           </ListItemIcon>
           <ListItemText primary="الصفحة الرئيسية" />
         </ListItem>
-        <ListItem className={classes.listItem} button>
+        <ListItem
+          className={classes.listItem}
+          button
+          onClick={() => {
+            router.push("/#most-recent-reviews");
+          }}
+        >
           <ListItemIcon>
             <RateReviewIcon />
           </ListItemIcon>
           <ListItemText primary="أخر المراجعات" />
         </ListItem>
-        <ListItem className={classes.listItem} button>
+        <ListItem
+          className={classes.listItem}
+          button
+          onClick={() => {
+            window.location.href =
+              "https://forum.urrevs.com/category/3/%D9%85%D9%82%D8%A7%D9%84%D8%A7%D8%AA";
+          }}
+        >
           <ListItemIcon>
             <CreateIcon />
           </ListItemIcon>
           <ListItemText primary="المقالات" />
         </ListItem>
-        <ListItem className={classes.listItem} button>
+        <ListItem
+          className={classes.listItem}
+          button
+          onClick={() => {
+            window.location.href = "https://forum.urrevs.com/";
+          }}
+        >
           <ListItemIcon>
             <ForumIcon />
           </ListItemIcon>
@@ -555,6 +622,7 @@ export default function MainNav(props) {
 
   return (
     <React.Fragment>
+      <BeforeUnloadEventListener />
       <div className={clsx(classes.root, classes.grow)}>
         <ElevationScroll>
           <AppBar

@@ -6,7 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import ProductReviews from "../components/ProductReviews";
 
 import { useStateValue } from "../store";
-import { fillForm, setDialog } from "../actions";
+import { setDialog } from "../actions";
 
 import cachedFetch, { overrideCache } from "../lib/cached-json-fetch";
 const DATA_URL = "http://localhost:3000/api/review/most_recent";
@@ -54,8 +54,6 @@ function MainCallToAction() {
 
   return useMemo(() => {
     function handleReviewClick() {
-      dispatch(fillForm("review", "brand", null));
-      dispatch(fillForm("review", "product", null));
       dispatch(setDialog("review"));
     }
 
@@ -92,7 +90,7 @@ export default function Index(props) {
       <Grid item xs={12}>
         <MainCallToAction />
       </Grid>
-      <Grid item xs={12}>
+      <Grid id="most-recent-reviews" item xs={12}>
         <ProductReviews title="أخر المراجعات" reviews={reviews} />
       </Grid>
       <Grid item xs={12} sm={6}>

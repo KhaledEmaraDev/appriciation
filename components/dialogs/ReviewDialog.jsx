@@ -127,6 +127,9 @@ const useStyles = makeStyles(theme => ({
   },
   center: {
     textAlign: "center"
+  },
+  error: {
+    color: theme.palette.error.main
   }
 }));
 
@@ -162,8 +165,9 @@ export default function ReviewDialog() {
   };
 
   useEffect(() => {
-    if (!review.product || review.ratings_buckets) return;
-    handleNext();
+    if (review.product) handleNext();
+    else return;
+    if (review.ratings_buckets) return;
     setLoading(true);
     fetch(
       `/api/pages/dialogs/review?brand=${encodeURIComponent(
@@ -249,6 +253,7 @@ export default function ReviewDialog() {
       !brand_rating ||
       Object.keys(ratings).length != ratings_buckets.length
     ) {
+      invalidateForm();
       return dispatch(showSnackbar("warning", "عليك بتقيم المنتج"));
     }
 
@@ -284,7 +289,9 @@ export default function ReviewDialog() {
       })
       .then(result => {
         dispatch(setDialog(null));
-        dispatch(showSnackbar("success", result.message));
+        dispatch(
+          showSnackbar(result.status ? "success" : "error", result.message)
+        );
       })
       .catch(err => {
         dispatch(setDialog(null));
@@ -297,6 +304,14 @@ export default function ReviewDialog() {
   const consError = review.dirty && !review.cons;
   const brand_prosError = review.dirty && !review.brand_pros;
   const brand_consError = review.dirty && !review.brand_cons;
+  const ratingsErrors =
+    review.dirty &&
+    Object.assign(
+      {},
+      ...review.ratings_buckets.map(bucket => ({
+        [bucket]: !(bucket in review.ratings)
+      }))
+    );
 
   return (
     <Container maxWidth="xs">
@@ -396,7 +411,13 @@ export default function ReviewDialog() {
             review.ratings_buckets.map(bucket => (
               <React.Fragment key={bucket}>
                 <Grid item xs={6}>
-                  <Typography variant="subtitle2" align="center">
+                  <Typography
+                    className={clsx({
+                      [classes.error]: ratingsErrors && ratingsErrors[bucket]
+                    })}
+                    variant="subtitle2"
+                    align="center"
+                  >
                     {bucket}:
                   </Typography>
                 </Grid>

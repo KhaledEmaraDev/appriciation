@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import XMLHttpRequest from "xhr2"; // TODO: Client side only.
 import deburr from "lodash/deburr";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
@@ -24,6 +25,12 @@ function renderInputComponent(inputProps) {
             <SearchIcon color="action" />
           </InputAdornment>
         }
+        inputProps={{
+          autoComplete: "off",
+          autoCorrect: "off",
+          autoCapitalize: "off",
+          spellCheck: "false"
+        }}
         inputRef={node => {
           ref(node);
           inputRef(node);
@@ -38,6 +45,9 @@ function renderInputComponent(inputProps) {
 }
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
+  if (!suggestion.product)
+    return <MenuItem component="div">لا توجد نتائج بحث</MenuItem>;
+
   const label = `${suggestion.brand} ${suggestion.product}`;
   const matches = match(label, query);
   const parts = parse(label, matches);
@@ -106,13 +116,32 @@ export default function SearchBar(props) {
   const classes = useStyles();
   const [inputValue, setInputValue] = React.useState("");
   const [suggestions, setSuggestions] = React.useState([]);
+  const [xhr] = React.useState(new XMLHttpRequest());
+
+  useEffect(() => {
+    const handleSearchResultLoaded = () => {
+      if (xhr.status != 200) {
+        console.log(`Error ${xhr.status}: ${xhr.statusText}`);
+      } else {
+        const products = xhr.response.products;
+        if (products.length) setSuggestions(products);
+        else setSuggestions([{ brand: null, product: null }]);
+      }
+    };
+
+    xhr.responseType = "json";
+    xhr.onload = handleSearchResultLoaded;
+  }, [xhr]);
 
   const handleSuggestionsFetchRequested = ({ value }) => {
     const inputValue = deburr(value.trim()).toLowerCase();
     if (inputValue.length === 0) return setSuggestions([]);
-    fetch(`/api/search/products?query=${encodeURIComponent(inputValue)}`)
-      .then(res => res.json())
-      .then(result => setSuggestions(result.products));
+    xhr.abort();
+    xhr.open(
+      "GET",
+      `/api/search/products?query=${encodeURIComponent(inputValue)}`
+    );
+    xhr.send();
   };
 
   const handleSuggestionsClearRequested = () => {
@@ -130,6 +159,7 @@ export default function SearchBar(props) {
     onSuggestionsClearRequested: handleSuggestionsClearRequested,
     onSuggestionSelected: (event, { suggestion }) => {
       setInputValue("");
+      if (!suggestion.product) return;
       props.handleSuggestionSelected(suggestion);
     },
     getSuggestionValue,

@@ -17,11 +17,33 @@ const handler = (req, res) => {
         date_buy: new Date(body.review.date_buy),
         date_rev: new Date()
       };
-      if (session.decodedToken) review.user = session.decodedToken.uid;
+      const uid = session.decodedToken && session.decodedToken.uid;
+      if (uid) review.user = uid;
 
       db.collection("reviews")
-        .insertOne(review)
-        .then(() => res.json({ status: true, message: "تم النشر بنجاح" }))
+        .find({ user: uid })
+        .count()
+        .then(count => {
+          if (count < 2) {
+            db.collection("reviews")
+              .insertOne(review)
+              .then(() =>
+                res.json({
+                  status: true,
+                  message: "وصلت المراجعة! سيتم النشر بعد قبولها."
+                })
+              )
+              .catch(error => {
+                console.log(error);
+                res.json({ error });
+              });
+          } else {
+            res.json({
+              status: false,
+              message: "لا يمكن نشر أكثر من مراجعتين"
+            });
+          }
+        })
         .catch(error => {
           console.log(error);
           res.json({ error });

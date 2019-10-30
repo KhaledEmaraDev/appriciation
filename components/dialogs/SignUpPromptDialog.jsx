@@ -84,7 +84,7 @@ export default function SignUpPromptDialog() {
       })
       .then(result => {
         dispatch(setDialog(null));
-        dispatch(showSnackbar("success", result.message));
+        showSnackbar(result.status ? "success" : "error", result.message);
       })
       .catch(err => {
         dispatch(setDialog(null));
