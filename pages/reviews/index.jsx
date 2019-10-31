@@ -12,11 +12,7 @@ const getDataURL = (brand, product) =>
   )}&product=${encodeURIComponent(product)}`;
 
 export default function Reviews(props) {
-  const { brand, product, specs, ratings, reviews } = props;
-
-  const rating =
-    ratings.reduce((value, object) => value + object.avg_rating, 0) /
-    ratings.length;
+  const { brand, product, specs, rating, ratings, reviews } = props;
 
   return (
     <Grid container spacing={2}>
@@ -51,6 +47,7 @@ Reviews.getInitialProps = async ({ query }) => {
     brand,
     product,
     specs: result.specs,
+    rating: result.rating,
     ratings: result.ratings,
     reviews: result.reviews
   };
@@ -59,7 +56,8 @@ Reviews.getInitialProps = async ({ query }) => {
 Reviews.propTypes = {
   brand: PropTypes.string.isRequired,
   product: PropTypes.string.isRequired,
-  ratings: PropTypes.array,
   specs: PropTypes.object,
+  rating: PropTypes.number,
+  ratings: PropTypes.array,
   reviews: PropTypes.array
 };

@@ -111,10 +111,7 @@ function Review(props) {
                 <Rating
                   className={classes.rating}
                   size="small"
-                  value={Math.round(
-                    Object.values(review.ratings).reduce((a, b) => a + b) /
-                      Object.values(review.ratings).length
-                  )}
+                  value={review.rating}
                   readOnly
                 />
               )}

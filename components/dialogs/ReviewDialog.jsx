@@ -203,6 +203,10 @@ export default function ReviewDialog() {
     };
   }
 
+  function handleOverallRatingChanged(event, newValue) {
+    dispatch(fillForm("review", "rating", newValue));
+  }
+
   function handleRatingChanged(bucket) {
     return function(event, newValue) {
       dispatch(
@@ -224,6 +228,7 @@ export default function ReviewDialog() {
       brand,
       product,
       date_buy,
+      rating,
       pros,
       cons,
       ratings,
@@ -250,6 +255,7 @@ export default function ReviewDialog() {
     }
 
     if (
+      !rating ||
       !brand_rating ||
       Object.keys(ratings).length != ratings_buckets.length
     ) {
@@ -274,6 +280,7 @@ export default function ReviewDialog() {
           brand,
           product,
           date_buy,
+          rating,
           pros,
           cons,
           ratings,
@@ -300,6 +307,7 @@ export default function ReviewDialog() {
   }
 
   const dateError = review.dirty && review.date_buy <= new Date("2008-01");
+  const ratingError = review.dirty && !review.rating;
   const prosError = review.dirty && !review.pros;
   const consError = review.dirty && !review.cons;
   const brand_prosError = review.dirty && !review.brand_pros;
@@ -371,6 +379,24 @@ export default function ReviewDialog() {
               value={review.date_buy}
               onChange={handleDateBuyChanged}
               allowKeyboardControl={false}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography
+              className={clsx({
+                [classes.error]: ratingError
+              })}
+              variant="subtitle2"
+              align="center"
+            >
+              قيم تجربتك العامة مع الهاتف
+            </Typography>
+          </Grid>
+          <Grid className={classes.center} item xs={12}>
+            <Rating
+              value={review.rating}
+              name="rating"
+              onChange={handleOverallRatingChanged}
             />
           </Grid>
           <Grid item xs={12}>

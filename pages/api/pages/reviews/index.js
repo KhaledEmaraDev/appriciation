@@ -18,6 +18,20 @@ const handler = (req, res) => {
         .collection("products")
         .findOne({ brand, product });
 
+      const ratingPromise = db
+        .collection("reviews")
+        .aggregate([
+          {
+            $match: {
+              brand: "Xiaomi",
+              product: "Redmi Note 7",
+              approved: true
+            }
+          },
+          { $group: { _id: null, rating: { $avg: "$rating" } } }
+        ])
+        .next();
+
       const ratingsPromise = db
         .collection("reviews")
         .aggregate([
@@ -63,13 +77,14 @@ const handler = (req, res) => {
         ])
         .toArray();
 
-      Promise.all([specsPromise, ratingsPromise, reviewsPromise])
+      Promise.all([specsPromise, ratingPromise, ratingsPromise, reviewsPromise])
         .then(results =>
           res.json({
             status: true,
             specs: results[0] && results[0].specs,
-            ratings: results[1],
-            reviews: results[2]
+            rating: results[1] && results[1].rating,
+            ratings: results[2],
+            reviews: results[3]
           })
         )
         .catch(error => {
