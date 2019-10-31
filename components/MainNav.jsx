@@ -281,6 +281,7 @@ function RootLevelSnackbar() {
 }
 
 function DrawerHeader() {
+  const router = useRouter();
   const [{ user }, dispatch] = useStateValue();
 
   useEffect(() => {
@@ -288,19 +289,28 @@ function DrawerHeader() {
       if (user) {
         dispatch(setUser(user));
         dispatch(setDialog(null));
-        return user.getIdToken().then(token => {
-          return fetch("/api/account/signin", {
-            method: "POST",
-            headers: new Headers({ "Content-Type": "application/json" }),
-            credentials: "same-origin",
-            body: JSON.stringify({ token })
+        user
+          .getIdToken()
+          .then(token => {
+            return fetch("/api/account/signin", {
+              method: "POST",
+              headers: new Headers({ "Content-Type": "application/json" }),
+              credentials: "same-origin",
+              body: JSON.stringify({ token })
+            });
+          })
+          .then(() => {
+            if (router.query.redirect_to)
+              window.location.href = router.query.redirect_to;
           });
-        });
       } else {
         dispatch(setUser(null));
         fetch("/api/account/signout", {
           method: "POST",
           credentials: "same-origin"
+        }).then(() => {
+          if (router.query.redirect_to)
+            window.location.href = router.query.redirect_to;
         });
       }
     });
@@ -308,7 +318,7 @@ function DrawerHeader() {
     return () => {
       unregisterAuthObserver();
     };
-  }, [dispatch]);
+  }, [dispatch, router.query.redirect_to]);
 
   return useMemo(() => {
     return (

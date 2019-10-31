@@ -20,12 +20,16 @@ const handler = (req, res) => {
         .verifyIdToken(token)
         .then(decodedToken => {
           req.session.decodedToken = decodedToken;
+          console.log(decodedToken);
           const newToken = {
             id: decodedToken.uid
           };
           if (decodedToken.name) newToken.name = decodedToken.name;
-          else newToken.username = decodedToken.email;
           if (decodedToken.picture) newToken.picture = decodedToken.picture;
+          if (decodedToken.email) {
+            newToken.email = decodedToken.email;
+            if (!newToken.name) newToken.username = decodedToken.email;
+          }
           jwt.sign(
             newToken,
             process.env.SESSION_SECRET,
