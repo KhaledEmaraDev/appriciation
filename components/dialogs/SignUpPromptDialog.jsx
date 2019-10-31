@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "../Button";
 import Container from "@material-ui/core/Container";
@@ -84,7 +84,9 @@ export default function SignUpPromptDialog() {
       })
       .then(result => {
         dispatch(setDialog(null));
-        showSnackbar(result.status ? "success" : "error", result.message);
+        dispatch(
+          showSnackbar(result.status ? "success" : "error", result.message)
+        );
       })
       .catch(err => {
         dispatch(setDialog(null));

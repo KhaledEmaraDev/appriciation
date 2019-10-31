@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 import { useRouter } from "next/router";
+import AboutUsDialog from "../components/dialogs/AboutUsDialog";
 import AccountCircleTwoTone from "@material-ui/icons/AccountCircleTwoTone";
 import Avatar from "@material-ui/core/Avatar";
 import AppBar from "@material-ui/core/AppBar";
@@ -141,11 +142,6 @@ const useStyles = makeStyles(theme => ({
   inline: {
     display: "inline"
   },
-  listItem: {
-    margin: theme.spacing(1),
-    width: "auto",
-    borderRadius: theme.spacing(1)
-  },
   content: {
     flexGrow: 1,
     display: "flex",
@@ -217,6 +213,13 @@ function RootLevelDialogs() {
           aria-labelledby="sign-up-prompt-dialog"
         >
           <SignUpPromptDialog />
+        </Dialog>
+        <Dialog
+          open={dialog === "about-us"}
+          onClose={handleDialogClose}
+          aria-labelledby="abous-us-dialog"
+        >
+          <AboutUsDialog />
         </Dialog>
       </React.Fragment>
     );
@@ -342,7 +345,12 @@ function AccountMenu() {
 
     const handleAccountClick = () => {
       if (!user) dispatch(setDialog("sign-in"));
-      else firebaseAuth.signOut();
+      else
+        firebaseAuth
+          .signOut()
+          .then(() =>
+            dispatch(showSnackbar("success", "تم تسجيل الخروج بنجاح."))
+          );
       handleMenuClose();
     };
 
@@ -364,7 +372,7 @@ function AccountMenu() {
   }, [dispatch, user, account, isMenuOpen]);
 }
 
-const useStyles1 = makeStyles(theme => ({
+const accountMenuStyles = makeStyles(theme => ({
   avatar: {
     width: theme.spacing(3),
     height: theme.spacing(3)
@@ -372,7 +380,7 @@ const useStyles1 = makeStyles(theme => ({
 }));
 
 function AccountMenuTrigger() {
-  const classes = useStyles1();
+  const classes = accountMenuStyles();
   const [{ user }, dispatch] = useStateValue();
 
   return useMemo(() => {
@@ -399,7 +407,85 @@ function AccountMenuTrigger() {
         )}
       </IconButton>
     );
-  }, [dispatch, user, classes.avatar]);
+  }, [classes, dispatch, user]);
+}
+
+const drawerItemsStyles = makeStyles(theme => ({
+  listItem: {
+    margin: theme.spacing(1),
+    width: "auto",
+    borderRadius: theme.spacing(1)
+  }
+}));
+
+function DrawerItems() {
+  const router = useRouter();
+  const classes = drawerItemsStyles();
+  // eslint-disable-next-line no-empty-pattern
+  const [{ dialog }, dispatch] = useStateValue();
+
+  return useMemo(() => {
+    const items = [
+      {
+        icon: <HomeIcon />,
+        text: "الصفحة الرئيسية",
+        action: () => {
+          router.push("/");
+        },
+        selected: dialog !== "about-us"
+      },
+      {
+        icon: <RateReviewIcon />,
+        text: "أخر المراجعات",
+        action: () => {
+          router.push("/#most-recent-reviews");
+        },
+        selected: false
+      },
+      {
+        icon: <CreateIcon />,
+        text: "المقالات",
+        action: () => {
+          window.location.href =
+            "https://forum.urrevs.com/category/3/%D9%85%D9%82%D8%A7%D9%84%D8%A7%D8%AA";
+        },
+        selected: false
+      },
+      {
+        icon: <ForumIcon />,
+        text: "المنتديات",
+        action: () => {
+          window.location.href = "https://forum.urrevs.com/";
+        },
+        selected: false
+      },
+      {
+        icon: <InfoIcon />,
+        text: "نبذة عنا",
+        action: () => {
+          dispatch(setDialog("about-us"));
+        },
+        selected: dialog === "about-us"
+      }
+    ];
+
+    return (
+      <List>
+        {items.map(item => (
+          <ListItem
+            key={item.text}
+            className={classes.listItem}
+            selected={item.selected}
+            button
+            onClick={item.action}
+          >
+            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.text} />
+          </ListItem>
+        ))}
+      </List>
+    );
+  }, [router, classes, dispatch, dialog]);
 }
 
 function BeforeUnloadEventListener() {
@@ -526,64 +612,7 @@ export default function MainNav(props) {
         )}
       </ListItem>
       <Divider variant="middle" />
-      <List>
-        <ListItem
-          className={classes.listItem}
-          button
-          onClick={() => {
-            router.push("/");
-          }}
-          selected
-        >
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText primary="الصفحة الرئيسية" />
-        </ListItem>
-        <ListItem
-          className={classes.listItem}
-          button
-          onClick={() => {
-            router.push("/#most-recent-reviews");
-          }}
-        >
-          <ListItemIcon>
-            <RateReviewIcon />
-          </ListItemIcon>
-          <ListItemText primary="أخر المراجعات" />
-        </ListItem>
-        <ListItem
-          className={classes.listItem}
-          button
-          onClick={() => {
-            window.location.href =
-              "https://forum.urrevs.com/category/3/%D9%85%D9%82%D8%A7%D9%84%D8%A7%D8%AA";
-          }}
-        >
-          <ListItemIcon>
-            <CreateIcon />
-          </ListItemIcon>
-          <ListItemText primary="المقالات" />
-        </ListItem>
-        <ListItem
-          className={classes.listItem}
-          button
-          onClick={() => {
-            window.location.href = "https://forum.urrevs.com/";
-          }}
-        >
-          <ListItemIcon>
-            <ForumIcon />
-          </ListItemIcon>
-          <ListItemText primary="المنتديات" />
-        </ListItem>
-        <ListItem className={classes.listItem} button>
-          <ListItemIcon>
-            <InfoIcon />
-          </ListItemIcon>
-          <ListItemText primary="نبذة عنا" />
-        </ListItem>
-      </List>
+      <DrawerItems />
     </React.Fragment>
   );
 

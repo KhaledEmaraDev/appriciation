@@ -312,6 +312,7 @@ export default function ReviewDialog() {
         [bucket]: !(bucket in review.ratings)
       }))
     );
+  const brand_ratingError = review.dirty && !review.brand_rating;
 
   return (
     <Container maxWidth="xs">
@@ -434,6 +435,9 @@ export default function ReviewDialog() {
             <React.Fragment>
               <Grid className={classes.brandContainer} item xs={12}>
                 <Typography
+                  className={clsx({
+                    [classes.error]: brand_ratingError
+                  })}
                   variant="subtitle2"
                   align="center"
                 >{`كيف تقيم ${review.brand}؟`}</Typography>

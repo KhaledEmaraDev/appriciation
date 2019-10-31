@@ -19,7 +19,7 @@ import Rating from "@material-ui/lab/Rating";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/styles";
 
-import { formatDistance, formatDistanceStrict } from "date-fns";
+import { formatDistance } from "date-fns";
 import arLocale from "date-fns/locale/ar-SA";
 
 const useStyles = makeStyles(theme => ({
@@ -153,10 +153,7 @@ function Review(props) {
             variant="body2"
             color="textSecondary"
           >
-            راجع منذ{" "}
-            {formatDistanceStrict(new Date(), new Date(review.date_rev), {
-              locale: arLocale
-            })}
+            راجع {new Date(review.date_rev).toLocaleDateString()}
           </Typography>
           {review.ratings && (
             <Collapse in={expanded}>
