@@ -21,11 +21,13 @@ export function setDialog(dialog) {
   };
 }
 
-export function showSnackbar(variant, message) {
+export function showSnackbar(variant, message, actionLabel, action) {
   return {
     type: actionTypes.SHOW_SNACKBAR,
     variant,
-    message
+    message,
+    actionLabel,
+    action
   };
 }
 

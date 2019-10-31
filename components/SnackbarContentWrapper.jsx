@@ -1,6 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
+import Button from "@material-ui/core/Button";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import CloseIcon from "@material-ui/icons/Close";
 import ErrorIcon from "@material-ui/icons/Error";
@@ -41,12 +42,23 @@ const useStyles = makeStyles(theme => ({
   message: {
     display: "flex",
     alignItems: "center"
+  },
+  button: {
+    color: theme.palette.common.white
   }
 }));
 
 export default function SnackbarContentWrapper(props) {
   const classes = useStyles();
-  const { className, message, onClose, variant, ...other } = props;
+  const {
+    className,
+    message,
+    actionLabel,
+    onActionClick,
+    onClose,
+    variant,
+    ...other
+  } = props;
   const Icon = variantIcon[variant];
 
   return (
@@ -60,6 +72,14 @@ export default function SnackbarContentWrapper(props) {
         </span>
       }
       action={[
+        <Button
+          key="action"
+          className={classes.button}
+          size="small"
+          onClick={onActionClick}
+        >
+          {actionLabel}
+        </Button>,
         <IconButton
           key="close"
           aria-label="close"
@@ -77,6 +97,8 @@ export default function SnackbarContentWrapper(props) {
 SnackbarContentWrapper.propTypes = {
   className: PropTypes.string,
   message: PropTypes.string,
+  actionLabel: PropTypes.string,
+  onActionClick: PropTypes.func,
   onClose: PropTypes.func,
   variant: PropTypes.oneOf(["error", "info", "success", "warning"])
 };

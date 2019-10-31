@@ -231,9 +231,7 @@ function RootLevelSnackbar() {
 
   return useMemo(() => {
     const handleSnackbarClose = (event, reason) => {
-      if (reason === "clickaway") {
-        return;
-      }
+      if (reason === "clickaway") return;
       dispatch(setSnackbar(false));
     };
 
@@ -269,6 +267,12 @@ function RootLevelSnackbar() {
           }
           message={
             snackbar.messageInfo ? snackbar.messageInfo.message : undefined
+          }
+          actionLabel={
+            snackbar.messageInfo ? snackbar.messageInfo.actionLabel : undefined
+          }
+          onActionClick={
+            snackbar.messageInfo ? snackbar.messageInfo.action : undefined
           }
         />
       </Snackbar>
@@ -496,6 +500,20 @@ function BeforeUnloadEventListener() {
     },
     dispatch
   ] = useStateValue();
+
+  useEffect(() => {
+    const reviewTimer = setTimeout(() => {
+      dispatch(
+        showSnackbar("info", "راجع هاتفك الاَن", "حسناً", () => {
+          dispatch(setDialog("review"));
+        })
+      );
+    }, 60000);
+
+    return () => {
+      clearTimeout(reviewTimer);
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const onUnload = e => {

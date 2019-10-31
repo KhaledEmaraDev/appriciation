@@ -34,7 +34,9 @@ export const reducer = (state, action) => {
         {
           key: new Date().getTime(),
           variant: action.variant,
-          message: action.message
+          message: action.message,
+          actionLabel: action.actionLabel,
+          action: action.action
         }
       ];
       let open = undefined,
