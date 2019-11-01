@@ -179,6 +179,7 @@ function Review(props) {
                 as={`/reviews/${encodeURIComponent(
                   review.brand
                 )}/${encodeURIComponent(review.product)}`}
+                prefetch={false}
               >
                 {`${review.brand} ${review.product}`}
               </Link>
@@ -207,6 +208,7 @@ function Review(props) {
                 as={`/reviews/${encodeURIComponent(
                   review.brand
                 )}/${encodeURIComponent(review.product)}`}
+                prefetch={false}
               >
                 {`${review.brand} ${review.product}`}
               </Link>

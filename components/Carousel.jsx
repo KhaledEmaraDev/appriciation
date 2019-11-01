@@ -93,6 +93,7 @@ export default function Carousel(props) {
                 as={`/reviews/${encodeURIComponent(
                   step.brand
                 )}/${encodeURIComponent(step.product)}`}
+                prefetch={false}
               >
                 <img
                   loading="auto"
@@ -116,6 +117,7 @@ export default function Carousel(props) {
           as={`/reviews/${encodeURIComponent(
             props.slides[activeStep].brand
           )}/${encodeURIComponent(props.slides[activeStep].product)}`}
+          prefetch={false}
         >
           <Typography
             className={classes.title}

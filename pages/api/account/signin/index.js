@@ -20,7 +20,6 @@ const handler = (req, res) => {
         .verifyIdToken(token)
         .then(decodedToken => {
           req.session.decodedToken = decodedToken;
-          console.log(decodedToken);
           const newToken = {
             id: decodedToken.uid
           };
