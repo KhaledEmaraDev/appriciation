@@ -48,7 +48,7 @@ const styles = {
       fontWeight: 300,
       fontDisplay: "swap",
       src:
-        'local("Tajawal Light"), local("Tajawal-Light"), url(/static/fonts/tajawal-arabic-300.woff2) format("woff2"); unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC'
+        'local("Tajawal Light"), local("Tajawal-Light"), url(/fonts/tajawal-arabic-300.woff2) format("woff2"); unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC'
     },
     {
       fontFamily: '"Tajawal"',
@@ -56,7 +56,7 @@ const styles = {
       fontWeight: 300,
       fontDisplay: "swap",
       src:
-        'local("Tajawal Light"), local("Tajawal-Light"), url(/static/fonts/tajawal-latin-300.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
+        'local("Tajawal Light"), local("Tajawal-Light"), url(/fonts/tajawal-latin-300.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
     },
     {
       fontFamily: '"Tajawal"',
@@ -64,7 +64,7 @@ const styles = {
       fontWeight: 400,
       fontDisplay: "swap",
       src:
-        'local("Tajawal"), local("Tajawal-Regular"), url(/static/fonts/tajawal-arabic-400.woff2) format("woff2"); unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC'
+        'local("Tajawal"), local("Tajawal-Regular"), url(/fonts/tajawal-arabic-400.woff2) format("woff2"); unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC'
     },
     {
       fontFamily: '"Tajawal"',
@@ -72,7 +72,7 @@ const styles = {
       fontWeight: 400,
       fontDisplay: "swap",
       src:
-        'local("Tajawal"), local("Tajawal-Regular"), url(/static/fonts/tajawal-latin-400.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
+        'local("Tajawal"), local("Tajawal-Regular"), url(/fonts/tajawal-latin-400.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
     },
     {
       fontFamily: '"Tajawal"',
@@ -80,7 +80,7 @@ const styles = {
       fontWeight: 500,
       fontDisplay: "swap",
       src:
-        'local("Tajawal Medium"), local("Tajawal-Medium"), url(/static/fonts/tajawal-arabic-500.woff2) format("woff2"); unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC'
+        'local("Tajawal Medium"), local("Tajawal-Medium"), url(/fonts/tajawal-arabic-500.woff2) format("woff2"); unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC'
     },
     {
       fontFamily: '"Tajawal"',
@@ -88,7 +88,7 @@ const styles = {
       fontWeight: 500,
       fontDisplay: "swap",
       src:
-        'local("Tajawal Medium"), local("Tajawal-Medium"), url(/static/fonts/tajawal-latin-500.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
+        'local("Tajawal Medium"), local("Tajawal-Medium"), url(/fonts/tajawal-latin-500.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
     },
     {
       fontFamily: '"Tajawal"',
@@ -96,7 +96,7 @@ const styles = {
       fontWeight: 700,
       fontDisplay: "swap",
       src:
-        'local("Tajawal Bold"), local("Tajawal-Bold"), url(/static/fonts/tajawal-arabic-700.woff2) format("woff2"); unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC'
+        'local("Tajawal Bold"), local("Tajawal-Bold"), url(/fonts/tajawal-arabic-700.woff2) format("woff2"); unicode-range: U+0600-06FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC'
     },
     {
       fontFamily: '"Tajawal"',
@@ -104,7 +104,7 @@ const styles = {
       fontWeight: 700,
       fontDisplay: "swap",
       src:
-        'local("Tajawal Bold"), local("Tajawal-Bold"), url(/static/fonts/tajawal-latin-700.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
+        'local("Tajawal Bold"), local("Tajawal-Bold"), url(/fonts/tajawal-latin-700.woff2) format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD'
     }
   ],
   "@global": {
@@ -171,7 +171,7 @@ class MyApp extends App {
           />
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://urrevs.com" />
-          <meta property="og:image" content="/static/images/favicon.ico" />
+          <meta property="og:image" content="/images/favicon.ico" />
           <meta property="fb:app_id" content="429675907831370" />
         </Head>
         <StateProvider initialState={initialState} reducer={reducer}>

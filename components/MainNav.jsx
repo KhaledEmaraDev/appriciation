@@ -657,7 +657,7 @@ export default function MainNav(props) {
           <MuiLink color="inherit" href="http://ihub.asu.edu.eg/">
             <img
               className={classes.sponsorIcon}
-              src="/static/images/iHub.png"
+              src="/images/iHub.png"
               alt="iHub logo"
             ></img>
           </MuiLink>
@@ -706,7 +706,7 @@ export default function MainNav(props) {
                   className={clsx(classes.logo, {
                     [classes.logoHide]: searchFocus
                   })}
-                  src="/static/images/logo.png"
+                  src="/images/logo.png"
                   alt="logo"
                 />
               </Link>
