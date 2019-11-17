@@ -10,6 +10,43 @@ if (dotEnvResult.error) {
 }
 
 const nextConfig = {
+  workboxOpts: {
+    exclude: [/\.(?:png|jpg|jpeg|svg)$/],
+    runtimeCaching: [
+      {
+        urlPattern: /\.(?:png|jpg|jpeg|svg)$/,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "images",
+          expiration: {
+            maxEntries: 25
+          }
+        }
+      },
+      {
+        urlPattern: /^https?.*/,
+        handler: "NetworkFirst",
+        options: {
+          cacheName: "offlineCache",
+          expiration: {
+            maxEntries: 1
+          }
+        }
+      },
+      {
+        urlPattern: /api/,
+        handler: "NetworkFirst",
+        options: {
+          cacheableResponse: {
+            statuses: [0, 200],
+            headers: {
+              "x-test": "true"
+            }
+          }
+        }
+      }
+    ]
+  },
   analyzeServer: ["server", "both"].includes(process.env.BUNDLE_ANALYZE),
   analyzeBrowser: ["browser", "both"].includes(process.env.BUNDLE_ANALYZE),
   bundleAnalyzerConfig: {
@@ -30,7 +67,7 @@ const nextConfig = {
     DB_PASSWORD: process.env.DB_PASSWORD,
     HOST_SERVER: process.env.HOST_SERVER,
     HOST_CLIENT: process.env.HOST_CLIENT,
-    GA_TRACKING_ID: process.env.GA_TRACKING_ID,
+    GA_TRACKING_ID: process.env.GA_TRACKING_ID
   },
   webpack(config) {
     return config;

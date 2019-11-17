@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import clsx from "clsx";
+import fetch from "../fetch";
 import PropTypes from "prop-types";
 import { useRouter } from "next/router";
 import AboutUsDialog from "../components/dialogs/AboutUsDialog";

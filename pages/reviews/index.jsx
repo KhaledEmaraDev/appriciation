@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import ProductOverview from "../../components/ProductOverview";
 import ProductRating from "../../components/ProductRating";
 import ProductReviews from "../../components/ProductReviews";
 import ProductSpecs from "../../components/ProductSpecs";
+
+import cachedFetch, { overrideCache } from "../../lib/cached-json-fetch";
 
 const getDataURL = (brand, product, isClient) =>
   `${
@@ -15,6 +17,11 @@ const getDataURL = (brand, product, isClient) =>
 
 export default function Reviews(props) {
   const { brand, product, specs, rating, ratings, reviews } = props;
+
+  useEffect(() => {
+    if (props.isServerRendered)
+      overrideCache(getDataURL(true), { specs, rating, ratings, reviews });
+  }, [props.isServerRendered, specs, rating, ratings, reviews]);
 
   return (
     <Grid container spacing={2}>
@@ -41,11 +48,11 @@ export default function Reviews(props) {
 
 Reviews.getInitialProps = async ({ req, query }) => {
   const { brand, product } = query;
-  const result = await fetch(getDataURL(brand, product, !req)).then(response =>
-    response.json()
-  );
+  const result = await cachedFetch(getDataURL(brand, product, !req));
+  const isServerRendered = !req;
 
   return {
+    isServerRendered,
     brand,
     product,
     specs: result.specs,
@@ -56,6 +63,7 @@ Reviews.getInitialProps = async ({ req, query }) => {
 };
 
 Reviews.propTypes = {
+  isServerRendered: PropTypes.bool.isRequired,
   brand: PropTypes.string.isRequired,
   product: PropTypes.string.isRequired,
   specs: PropTypes.object,

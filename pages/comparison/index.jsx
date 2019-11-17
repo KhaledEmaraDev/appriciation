@@ -1,4 +1,5 @@
 import React from "react";
+import fetch from "../../fetch";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import ProductSpecs from "../../components/ProductSpecs";

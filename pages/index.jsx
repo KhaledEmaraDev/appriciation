@@ -1,10 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import CallToAction from "../components/CallToAction";
 import Carousel from "../components/Carousel";
 import Grid from "@material-ui/core/Grid";
 import ProductReviews from "../components/ProductReviews";
 
+import cachedFetch, { overrideCache } from "../lib/cached-json-fetch";
 import { useStateValue } from "../store";
 import { setDialog } from "../actions";
 
@@ -81,6 +82,10 @@ function MainCallToAction() {
 export default function Index(props) {
   const { reviews } = props;
 
+  useEffect(() => {
+    if (props.isServerRendered) overrideCache(getDataURL(true), { reviews });
+  }, [props.isServerRendered, reviews]);
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -100,15 +105,16 @@ export default function Index(props) {
 }
 
 Index.getInitialProps = async ({ req }) => {
-  const result = await fetch(getDataURL(!req)).then(response =>
-    response.json()
-  );
+  const result = await cachedFetch(getDataURL(!req));
+  const isServerRendered = !req;
 
   return {
+    isServerRendered,
     reviews: result.reviews
   };
 };
 
 Index.propTypes = {
+  isServerRendered: PropTypes.bool.isRequired,
   reviews: PropTypes.array
 };
