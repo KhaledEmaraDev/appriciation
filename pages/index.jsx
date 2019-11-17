@@ -8,7 +8,10 @@ import ProductReviews from "../components/ProductReviews";
 import { useStateValue } from "../store";
 import { setDialog } from "../actions";
 
-const DATA_URL = "http://localhost:3000/api/review/most_recent";
+const getDataURL = isClient =>
+  `${
+    isClient ? process.env.HOST_CLIENT : process.env.HOST_SERVER
+  }/api/review/most_recent`;
 
 const upcomingSlides = [
   {
@@ -96,8 +99,10 @@ export default function Index(props) {
   );
 }
 
-Index.getInitialProps = async () => {
-  const result = await fetch(DATA_URL).then(response => response.json());
+Index.getInitialProps = async ({ req }) => {
+  const result = await fetch(getDataURL(!req)).then(response =>
+    response.json()
+  );
 
   return {
     reviews: result.reviews

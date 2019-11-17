@@ -3,6 +3,15 @@ import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import ProductSpecs from "../../components/ProductSpecs";
 
+const getDataURL = (brand, product, comparedBrand, comparedProduct, isClient) =>
+  `${
+    isClient ? process.env.HOST_CLIENT : process.env.HOST_SERVER
+  }/api/pages/comparison?brand=${encodeURIComponent(
+    brand
+  )}&product=${encodeURIComponent(product)}&comparedBrand=${encodeURIComponent(
+    comparedBrand
+  )}&comparedProduct=${encodeURIComponent(comparedProduct)}`;
+
 export default function ComparedReviews(props) {
   const {
     brand,
@@ -29,16 +38,10 @@ export default function ComparedReviews(props) {
   );
 }
 
-ComparedReviews.getInitialProps = async ({ query }) => {
+ComparedReviews.getInitialProps = async ({ req, query }) => {
   const { brand, product, comparedBrand, comparedProduct } = query;
   const res = await fetch(
-    `http://localhost:3000/api/pages/comparison?brand=${encodeURIComponent(
-      brand
-    )}&product=${encodeURIComponent(
-      product
-    )}&comparedBrand=${encodeURIComponent(
-      comparedBrand
-    )}&comparedProduct=${encodeURIComponent(comparedProduct)}`
+    getDataURL(brand, product, comparedBrand, comparedProduct, !req)
   );
   const result = await res.json();
   return {

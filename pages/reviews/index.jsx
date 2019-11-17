@@ -6,8 +6,10 @@ import ProductRating from "../../components/ProductRating";
 import ProductReviews from "../../components/ProductReviews";
 import ProductSpecs from "../../components/ProductSpecs";
 
-const getDataURL = (brand, product) =>
-  `http://localhost:3000/api/pages/reviews?brand=${encodeURIComponent(
+const getDataURL = (brand, product, isClient) =>
+  `${
+    isClient ? process.env.HOST_CLIENT : process.env.HOST_SERVER
+  }/api/pages/reviews?brand=${encodeURIComponent(
     brand
   )}&product=${encodeURIComponent(product)}`;
 
@@ -37,9 +39,9 @@ export default function Reviews(props) {
   );
 }
 
-Reviews.getInitialProps = async ({ query }) => {
+Reviews.getInitialProps = async ({ req, query }) => {
   const { brand, product } = query;
-  const result = await fetch(getDataURL(brand, product)).then(response =>
+  const result = await fetch(getDataURL(brand, product, !req)).then(response =>
     response.json()
   );
 
