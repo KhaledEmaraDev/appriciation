@@ -1,78 +1,55 @@
-import React, { useEffect } from "react";
-import XMLHttpRequest from "xhr2"; // TODO: Client side only.
-import deburr from "lodash/deburr";
-import match from "autosuggest-highlight/match";
+import React from "react";
 import parse from "autosuggest-highlight/parse";
 import PropTypes from "prop-types";
-import Autosuggest from "react-autosuggest";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import match from "autosuggest-highlight/match";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import InputBase from "@material-ui/core/InputBase";
-import MenuItem from "@material-ui/core/MenuItem";
-import Paper from "@material-ui/core/Paper";
 import SearchIcon from "@material-ui/icons/SearchRounded";
 import { makeStyles } from "@material-ui/core/styles";
 
-function renderInputComponent(inputProps) {
-  const { classes, inputRef = () => {}, ref, ...other } = inputProps;
+function renderInputComponent(props) {
+  const { params, classes, loading, ...other } = props;
 
   return (
     <div>
       <InputBase
-        className={classes.searchBar}
         fullWidth
+        className={classes.searchBar}
         startAdornment={
-          <InputAdornment className={classes.inputAdornment} position="start">
-            <SearchIcon color="action" />
-          </InputAdornment>
+          <React.Fragment>
+            {loading ? (
+              <CircularProgress
+                className={classes.inputAdornment}
+                color="inherit"
+                size={20}
+              />
+            ) : (
+              <SearchIcon className={classes.inputAdornment} color="action" />
+            )}
+          </React.Fragment>
         }
-        inputProps={{
-          autoComplete: "off",
-          autoCorrect: "off",
-          autoCapitalize: "off",
-          spellCheck: "false"
-        }}
-        inputRef={node => {
-          ref(node);
-          inputRef(node);
-        }}
+        inputProps={{ ...params.inputProps, autoComplete: "off" }}
         classes={{
           input: classes.input
         }}
+        ref={params.InputProps.ref}
         {...other}
       />
     </div>
   );
 }
 
-function renderSuggestion(suggestion, { query, isHighlighted }) {
-  if (!suggestion.product)
-    return <MenuItem component="div">لا توجد نتائج بحث</MenuItem>;
-
-  const label = `${suggestion.brand} ${suggestion.product}`;
-  const matches = match(label, query);
-  const parts = parse(label, matches);
-
-  return (
-    <MenuItem selected={isHighlighted} component="div">
-      <div>
-        {parts.map((part, index) => (
-          <span
-            key={part.text + index}
-            style={{ fontWeight: part.highlight ? 500 : 400 }}
-          >
-            {part.text}
-          </span>
-        ))}
-      </div>
-    </MenuItem>
-  );
-}
-
-function getSuggestionValue(suggestion) {
-  return `${suggestion.brand} ${suggestion.product}`;
-}
+renderInputComponent.propTypes = {
+  params: PropTypes.object,
+  classes: PropTypes.object,
+  loading: PropTypes.bool
+};
 
 const useStyles = makeStyles(theme => ({
+  autoComplete: {
+    flexGrow: "1"
+  },
   searchBar: {
     borderRadius: "100px",
     backgroundColor: theme.palette.grey["200"],
@@ -81,113 +58,106 @@ const useStyles = makeStyles(theme => ({
     },
     "&:focus-within": {
       backgroundColor: theme.palette.background.default,
-      boxShadow: `0 0 0 1px ${theme.palette.divider}`
+      boxShadow: `0 0 0px 2px ${theme.palette.primary.main}`
     }
   },
   inputAdornment: {
     marginLeft: theme.spacing(1)
   },
   input: {
-    padding: theme.spacing(1.25, 0, 0.75, 0)
-  },
-  container: {
-    position: "relative",
-    flexGrow: 1
-  },
-  suggestionsContainerOpen: {
-    position: "absolute",
-    zIndex: theme.zIndex.modal + 1,
-    marginTop: theme.spacing(1),
-    left: 0,
-    right: 0,
-    boxShadow: theme.shadows[8]
-  },
-  suggestion: {
-    display: "block"
-  },
-  suggestionsList: {
-    margin: 0,
-    padding: 0,
-    listStyleType: "none"
+    padding: theme.spacing(1.25, 0, 0.75, 1)
   }
 }));
 
 export default function SearchBar(props) {
   const classes = useStyles();
-  const [inputValue, setInputValue] = React.useState("");
-  const [suggestions, setSuggestions] = React.useState([]);
-  const [xhr] = React.useState(new XMLHttpRequest());
+  const [open, setOpen] = React.useState(false);
+  const [query, setQuery] = React.useState("");
+  const [options, setOptions] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
 
-  useEffect(() => {
-    const handleSearchResultLoaded = () => {
-      if (xhr.status != 200) {
-        console.log(`Error ${xhr.status}: ${xhr.statusText}`);
-      } else {
-        const products = xhr.response.products;
-        if (products.length) setSuggestions(products);
-        else setSuggestions([{ brand: null, product: null }]);
+  React.useEffect(() => {
+    let active = true;
+
+    (async () => {
+      setLoading(true);
+      const response = await fetch(
+        `/api/search/products?query=${encodeURIComponent(query)}`
+      );
+      const result = await response.json();
+
+      if (active) {
+        setLoading(false);
+        setOptions(result.products);
       }
+    })();
+
+    return () => {
+      active = false;
     };
+  }, [query]);
 
-    xhr.responseType = "json";
-    xhr.onload = handleSearchResultLoaded;
-  }, [xhr]);
+  React.useEffect(() => {
+    if (!open) {
+      setLoading(false);
+      setOptions([]);
+    }
+  }, [open]);
 
-  const handleSuggestionsFetchRequested = ({ value }) => {
-    const inputValue = deburr(value.trim()).toLowerCase();
-    if (inputValue.length === 0) return setSuggestions([]);
-    xhr.abort();
-    xhr.open(
-      "GET",
-      `/api/search/products?query=${encodeURIComponent(inputValue)}`
-    );
-    xhr.send();
-  };
-
-  const handleSuggestionsClearRequested = () => {
-    setSuggestions([]);
-  };
-
-  const handleChange = (event, { newValue }) => {
-    setInputValue(newValue);
-  };
-
-  const autosuggestProps = {
-    renderInputComponent,
-    suggestions: suggestions,
-    onSuggestionsFetchRequested: handleSuggestionsFetchRequested,
-    onSuggestionsClearRequested: handleSuggestionsClearRequested,
-    onSuggestionSelected: (event, { suggestion }) => {
-      setInputValue("");
-      if (!suggestion.product) return;
-      props.handleSuggestionSelected(suggestion);
-    },
-    getSuggestionValue,
-    renderSuggestion,
-    focusInputOnSuggestionClick: false
+  const handleInputChange = (event, value) => {
+    setQuery(value);
   };
 
   return (
-    <Autosuggest
-      {...autosuggestProps}
-      inputProps={{
-        classes,
-        id: props.id,
-        placeholder: props.placeholder,
-        value: inputValue,
-        onChange: handleChange,
-        onFocus: props.onFocus,
-        onBlur: props.onBlur
+    <Autocomplete
+      id={props.id}
+      className={classes.autoComplete}
+      open={open}
+      loadingText="جاري التحميل"
+      noOptionsText="لا يوجد نتائج لهذا البحث"
+      autoComplete
+      autoHighlight
+      onOpen={() => {
+        setOpen(true);
       }}
-      theme={{
-        container: classes.container,
-        suggestionsContainerOpen: classes.suggestionsContainerOpen,
-        suggestionsList: classes.suggestionsList,
-        suggestion: classes.suggestion
+      onClose={() => {
+        setOpen(false);
       }}
-      renderSuggestionsContainer={options => (
-        <Paper {...options.containerProps}>{options.children}</Paper>
-      )}
+      onInputChange={handleInputChange}
+      onChange={(_event, value) => props.handleSuggestionSelected(value)}
+      filterOptions={options => options}
+      getOptionLabel={option => `${option.brand} ${option.product}`}
+      options={options}
+      loading={loading}
+      inputValue={query}
+      renderInput={params =>
+        renderInputComponent({
+          params,
+          classes,
+          loading, // TODO: must be passed through with params
+          placeholder: props.placeholder,
+          onFocus: props.onFocus,
+          onBlur: props.onBlur
+        })
+      }
+      renderOption={(option, { inputValue }) => {
+        const suggestion = `${option.brand} ${option.product}`;
+        const matches = match(suggestion, inputValue);
+        const parts = parse(suggestion, matches);
+
+        return (
+          <div>
+            {parts.map((part, index) => (
+              <span
+                key={index}
+                style={{ fontWeight: part.highlight ? 700 : 400 }}
+              >
+                {part.text}
+              </span>
+            ))}
+          </div>
+        );
+      }}
     />
   );
 }
