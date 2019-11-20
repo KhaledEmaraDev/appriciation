@@ -17,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     overflowX: "auto"
   },
   subheader: {
+    marginBottom: theme.spacing(1),
     color: theme.palette.text.secondary,
     fontSize: theme.typography.pxToRem(theme.typography.fontSize),
     boxSizing: "border-box",
@@ -92,7 +93,9 @@ export default function ProductSpecs(props) {
       ),
       createData(
         "تاريخ الإصدار",
-        spec.publish_date ? spec.publish_date : "لم يعلن بعد"
+        spec.publish_date
+          ? new Date(spec.publish_date).toLocaleDateString()
+          : "لم يعلن بعد"
       ),
       createData(
         "أبعاد الجسم",
