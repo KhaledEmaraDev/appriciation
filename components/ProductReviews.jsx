@@ -1,19 +1,17 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import clsx from "clsx";
 import PropTypes from "prop-types";
 import AccountCircleTwoTone from "@material-ui/icons/AccountCircleTwoTone";
 import Avatar from "@material-ui/core/Avatar";
 import Collapse from "@material-ui/core/Collapse";
-import Divider from "@material-ui/core/Divider";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Grid from "@material-ui/core/Grid";
 import IconButton from "@material-ui/core/IconButton";
 import Link from "./Link";
-import List from "@material-ui/core/List";
+import List from "./VirtualList";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
-import ListSubheader from "@material-ui/core/ListSubheader";
 import Paper from "@material-ui/core/Paper";
 import Rating from "@material-ui/lab/Rating";
 import Typography from "@material-ui/core/Typography";
@@ -77,7 +75,7 @@ function ReviewRatings(props) {
   });
 }
 
-function Review(props) {
+const Review = forwardRef(function Review(props, ref) {
   const classes = useStyles(props);
   const [expanded, setExpanded] = React.useState(false);
   const { brand, product, review } = props;
@@ -86,6 +84,7 @@ function Review(props) {
     <ListItem
       alignItems="flex-start"
       button
+      ref={ref}
       onClick={() => setExpanded(!expanded)}
     >
       <ListItemAvatar>
@@ -221,7 +220,7 @@ function Review(props) {
       </ListItemText>
     </ListItem>
   );
-}
+});
 
 Review.propTypes = {
   brand: PropTypes.string,
@@ -229,26 +228,39 @@ Review.propTypes = {
   review: PropTypes.object.isRequired
 };
 
+const useProductReviewsStyles = makeStyles(theme => ({
+  subheader: {
+    color: theme.palette.text.secondary,
+    fontSize: theme.typography.pxToRem(theme.typography.fontSize),
+    boxSizing: "border-box",
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: 500,
+    lineHeight: 1.5,
+    padding: theme.spacing(1.25, 1.75)
+  }
+}));
+
 export default function ProductReviews(props) {
+  const classes = useProductReviewsStyles();
   const { title, brand, product, reviews } = props;
 
   return (
     <Paper elevation={25}>
-      <List
-        subheader={
-          <ListSubheader>
-            {title ? title : `مراجعات هاتف ${brand} ${product}`}
-          </ListSubheader>
-        }
+      <Typography
+        className={classes.subheader}
+        component="h1"
+        variant="subtitle2"
       >
-        {reviews.map((review, index) => (
-          <React.Fragment key={review._id}>
-            <Review brand={brand} product={product} review={review} />
-            {index !== reviews.length - 1 && (
-              <Divider variant="inset" component="li" />
-            )}
-          </React.Fragment>
-        ))}
+        {title}
+      </Typography>
+      <List
+        containerHeight={400}
+        itemCount={reviews.length}
+        estimatedItemHeight={200}
+      >
+        {index => (
+          <Review brand={brand} product={product} review={reviews[index]} />
+        )}
       </List>
     </Paper>
   );
