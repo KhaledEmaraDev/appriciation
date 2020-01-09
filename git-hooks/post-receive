@@ -1,0 +1,15 @@
+#!/bin/bash
+echo 'post-receive: triggered.'
+cd $HOME/urrevs
+echo 'post-receive: git check out…'
+git --git-dir=$HOME/urrevs.git --work-tree=$HOME/urrevs checkout master -f
+echo 'post-receive: yarn install…'
+YARN_BIN=`yarn global bin`
+yarn install \
+&& echo 'post-receive: building…' \
+&& yarn build \
+&& echo 'post-receive: → done.' \
+&& ($YARN_BIN/pm2 delete urrevs || true) \
+&& export NODE_ENV=production \
+&& $YARN_BIN/pm2 start server.js --name urrevs --time \
+&& echo 'post-receive: app started successfully with pm2.'
